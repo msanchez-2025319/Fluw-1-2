@@ -1,13 +1,18 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { HttpClient } from '@angular/common/http';
+import { catchError, map, of } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export const authGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
+  const http = inject(HttpClient);
   const router = inject(Router);
 
-  if (authService.currentUser()) {
-    return true;
-  }
-  return router.parseUrl('/login');
+  return http.get(`${environment.apiUrl}/auth/me`, { withCredentials: true }).pipe(
+    map(() => true),
+    catchError(() => {
+      router.navigateByUrl('/session-expired');
+      return of(false);
+    })
+  );
 };
