@@ -15,6 +15,7 @@ model User {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   refreshTokens RefreshToken[]
+  ingresos      Ingreso[]
 
   @@map("users")
 }
@@ -31,7 +32,61 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
+model Ingreso {
+  id            String            @id @default(uuid())
+  tipo          TipoIngreso
+  categoria     CategoriaIngreso?
+  descripcion   String?
+  monto         Decimal           @db.Decimal(10, 2)
+  fecha         DateTime
+  metodoPago    MetodoPago
+  estado        EstadoIngreso?
+  cuentaDestino CuentaDestino
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@map("ingresos")
+}
+
 enum Role {
   ADMIN
   USER
+}
+
+enum TipoIngreso {
+  SUELDO_FIJO
+  SUELDO_EXTRA
+  SUELDO_VARIADO
+}
+
+enum CategoriaIngreso {
+  SALARIO
+  SERVICIOS
+  VENTAS
+  OTROS_INGRESOS
+}
+
+enum MetodoPago {
+  TARJETA
+  EFECTIVO
+  TRANSFERENCIA
+  CHEQUE
+}
+
+enum EstadoIngreso {
+  PAGADO
+  PENDIENTE
+  PARCIAL
+}
+
+enum CuentaDestino {
+  AHORROS
+  PAGOS
+  GASTOS_PERSONALES
+  INVERSIONES
+  CONSUMO_PERSONAL
+  CUENTAS_BANCARIAS
+  OTROS
 }

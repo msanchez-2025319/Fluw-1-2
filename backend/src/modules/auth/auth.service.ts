@@ -6,7 +6,7 @@ import type { JwtPayload } from "../../types/auth.types.js";
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 export const ACCESS_TOKEN_EXPIRES_IN =
-  process.env.ACCESS_TOKEN_EXPIRES_IN || "15m";
+  process.env.ACCESS_TOKEN_EXPIRES_IN || "30m";
 
 const SESSION_IDLE_TIMEOUT =
   process.env.SESSION_IDLE_TIMEOUT || "1h";

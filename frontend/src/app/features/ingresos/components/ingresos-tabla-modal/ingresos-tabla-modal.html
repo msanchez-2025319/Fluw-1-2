@@ -1,0 +1,53 @@
+<div class="modal-overlay" (click)="onCerrar()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Ingresos vista</h2>
+      <button type="button" class="modal-close" (click)="onCerrar()">
+        <img src="/images/cancel.png" alt="Cerrar" class="modal-close-img">
+      </button>
+    </div>
+
+    <div class="table-wrapper">
+      @if (ingresos.length === 0) {
+        <p class="empty-state">Aún no hay ingresos registrados</p>
+      } @else {
+        <table class="tabla-ingresos">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Fecha</th>
+              <th>Descripción</th>
+              <th>Monto</th>
+              <th>Método de pago</th>
+              <th>Cuenta o Destino</th>
+              <th>Categoría</th>
+              <th>Estado</th>
+              <th>Tipo</th>
+              <th>Editar</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (ingreso of ingresos; track ingreso.id) {
+              <tr>
+                <td class="id-cell">{{ ingreso.id }}</td>
+                <td>{{ fechaFormateada(ingreso.fecha) }}</td>
+                <td>{{ descripcionMostrada(ingreso) }}</td>
+                <td>Q{{ ingreso.monto }}</td>
+                <td>{{ ingreso.metodoPago }}</td>
+                <td>{{ ingreso.cuentaDestino }}</td>
+                <td>{{ ingreso.categoria || '-' }}</td>
+                <td>{{ ingreso.estado || 'Pagado' }}</td>
+                <td>{{ etiquetaTipo(ingreso.tipo) }}</td>
+                <td>
+                  <button type="button" class="row-editar" (click)="onEditar(ingreso.id)">
+                    <img src="/images/editar.png" alt="Editar" class="row-editar-img">
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+</div>

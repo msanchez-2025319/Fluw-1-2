@@ -1,0 +1,8 @@
+.dropdown { position: relative; width: 100%; }
+.dropdown-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; background: var(--card-cream, #F6F1E5); border: 1px solid var(--card-border, #E7DFC9); border-radius: 999px; padding: 10px 18px; font-size: 0.9rem; font-weight: 600; color: var(--text-dark, #22301F); cursor: pointer; }
+.dropdown-arrow { transition: transform 0.15s ease; font-size: 0.75rem; }
+.dropdown-arrow.open { transform: rotate(180deg); }
+.dropdown-backdrop { position: fixed; inset: 0; z-index: 150; }
+.dropdown-list { position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 151; list-style: none; margin: 0; padding: 6px; background: var(--card-cream, #F6F1E5); border: 1px solid var(--card-border, #E7DFC9); border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-height: 220px; overflow-y: auto; }
+.dropdown-option { width: 100%; text-align: left; background: transparent; border: none; padding: 8px 10px; border-radius: 8px; font-size: 0.88rem; cursor: pointer; color: var(--text-dark, #22301F); }
+.dropdown-option:hover { background: var(--row-income, #DCE7CF); }

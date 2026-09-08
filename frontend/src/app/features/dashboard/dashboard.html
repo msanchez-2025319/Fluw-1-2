@@ -7,18 +7,20 @@
     </div>
 
     <nav class="topbar-nav">
-      <button class="pill pill-static">
-        <span class="pill-static-line">Sueldo Fijo&nbsp;<strong>Q0.00</strong></span>
+
+      <!-- Pill de Sueldo Fijo -->
+      <button class="pill pill-static" (click)="abrirSueldoFijo()">
+        <span class="pill-static-line">Sueldo Fijo&nbsp;<strong>{{ sueldoFijoTexto() }}</strong></span>
       </button>
 
-      <button class="pill pill-link">
-        <span class="pill-icon" aria-hidden="true">
-          <img src="/images/ingresos.png" alt="Ingresos" class="pill-img">
-        </span>
+      <!-- Pill de Ingresos -->
+      <button class="pill pill-link" (click)="abrirIngresosMenu()">
+        <span class="pill-icon" aria-hidden="true"><img src="/images/ingresos.png" alt="Ingresos" class="pill-img"></span>
         <span>Ingresos</span>
         <span class="chevron">&gt;</span>
       </button>
 
+      <!-- Gastos -->
       <button class="pill pill-link pill-active">
         <span class="pill-icon" aria-hidden="true">
           <img src="/images/gastos.png" alt="Gastos" class="pill-img">
@@ -27,6 +29,7 @@
         <span class="chevron">&gt;</span>
       </button>
 
+      <!-- Impuestos -->
       <button class="pill pill-link">
         <span class="pill-icon" aria-hidden="true">
           <img src="/images/impuesto.png" alt="Impuestos" class="pill-img">
@@ -34,186 +37,364 @@
         <span>Impuestos</span>
         <span class="chevron">&gt;</span>
       </button>
+
     </nav>
 
     <div class="topbar-user">
+
       <button class="user-block" aria-label="Notificaciones y correo">
         <span class="user-block-icon" aria-hidden="true">
-          <img src="/images/perfil.png" alt="perfil" class="user-block-img">
-          <img src="/images/notificaciones.png" alt="notificaciones" class="user-block-img-small">
+          <img
+            src="/images/perfil.png"
+            alt="perfil"
+            class="user-block-img"
+          >
+
+          <img
+            src="/images/notificaciones.png"
+            alt="notificaciones"
+            class="user-block-img-small"
+          >
         </span>
+
         <span class="user-email">admin@fluw.com</span>
       </button>
-      <button class="icon-btn icon-btn-logout" aria-label="Cerrar sesion">
-        <img src="/images/cerrar-sesion.png" alt="Cerrar sesion" class="status-icon">
+
+      <button
+        class="icon-btn icon-btn-logout"
+        aria-label="Cerrar sesion"
+      >
+        <img
+          src="/images/cerrar-sesion.png"
+          alt="Cerrar sesion"
+          class="status-icon"
+        >
       </button>
+
     </div>
   </header>
+
 
   <!-- ===================== GRID PRINCIPAL ===================== -->
   <main class="grid">
 
-    <!-- Ingresos vista -->
+    <!-- ===================== INGRESOS VISTA ===================== -->
     <section class="card income-card">
       <div class="card-header dark income-header">
         <h2>Ingresos vista</h2>
-        <button class="menu-btn" aria-label="Menu"><img src="/images/menu.png" alt="Menu" class="menu-img"></button>
+        <button class="menu-btn" aria-label="Ver todos los movimientos" (click)="abrirTablaCompleta()">
+          <img src="/images/menu.png" alt="Menu" class="menu-img">
+        </button>
       </div>
-      <ul class="list-items income">
-        <li>
-          <span>Servicio de instalaci&oacute;n de red Wi-Fi</span>
-          <span class="amount">Q200</span>
-          <span class="status status-check" aria-hidden="true">
-            <img src="/images/cheque.png" alt="cheque" class="status-icon">
-          </span>
-        </li>
-        <li>
-          <span>Servicio de p&aacute;gina web</span>
-          <span class="amount">Q150</span>
-          <span class="status status-check" aria-hidden="true">
-            <img src="/images/cheque.png" alt="cheque" class="status-icon">
-          </span>
-        </li>
-      </ul>
+      <app-ingresos-vista-lista [ingresos]="ultimosIngresos()" (eliminado)="onIngresoEliminado()"></app-ingresos-vista-lista>
     </section>
 
-    <!-- Grafica -->
+
+    <!-- ===================== GRAFICA ===================== -->
     <section class="card card-graph">
+
       <div class="card-header dark centered">
         <h2>Grafica</h2>
       </div>
+
       <div class="graph-body">
+
         <div class="graph-legend">
-          <span class="legend-item"><i class="dot dot-green"></i>Ingrso</span>
-          <span class="legend-item"><i class="dot dot-red"></i>Gasto</span>
+
+          <span class="legend-item">
+            <i class="dot dot-green"></i>
+            Ingrso
+          </span>
+
+          <span class="legend-item">
+            <i class="dot dot-red"></i>
+            Gasto
+          </span>
+
         </div>
+
         <div class="graph-chart">
+
           <div class="graph-axis">2.000</div>
+
           <div class="bars">
+
             <div class="bar-group">
-              <div class="bar-pair"><div class="bar bar-green" style="height:78%"></div><div class="bar bar-red" style="height:8%"></div></div>
+              <div class="bar-pair">
+                <div class="bar bar-green" style="height:78%"></div>
+                <div class="bar bar-red" style="height:8%"></div>
+              </div>
               <span class="bar-day">Lunes</span>
             </div>
+
             <div class="bar-group">
-              <div class="bar-pair"><div class="bar bar-green" style="height:85%"></div><div class="bar bar-red" style="height:6%"></div></div>
+              <div class="bar-pair">
+                <div class="bar bar-green" style="height:85%"></div>
+                <div class="bar bar-red" style="height:6%"></div>
+              </div>
               <span class="bar-day">Martes</span>
             </div>
+
             <div class="bar-group">
-              <div class="bar-pair"><div class="bar bar-green" style="height:55%"></div><div class="bar bar-red" style="height:8%"></div></div>
+              <div class="bar-pair">
+                <div class="bar bar-green" style="height:55%"></div>
+                <div class="bar bar-red" style="height:8%"></div>
+              </div>
               <span class="bar-day">Miercoles</span>
             </div>
+
             <div class="bar-group">
-              <div class="bar-pair"><div class="bar bar-green" style="height:60%"></div><div class="bar bar-red" style="height:6%"></div></div>
+              <div class="bar-pair">
+                <div class="bar bar-green" style="height:60%"></div>
+                <div class="bar bar-red" style="height:6%"></div>
+              </div>
               <span class="bar-day">Jueves</span>
             </div>
+
             <div class="bar-group">
-              <div class="bar-pair"><div class="bar bar-green" style="height:100%"></div><div class="bar bar-red" style="height:6%"></div></div>
+              <div class="bar-pair">
+                <div class="bar bar-green" style="height:100%"></div>
+                <div class="bar bar-red" style="height:6%"></div>
+              </div>
               <span class="bar-day">Viernes</span>
             </div>
+
             <div class="bar-group">
-              <div class="bar-pair"><div class="bar bar-green" style="height:25%"></div><div class="bar bar-red" style="height:6%"></div></div>
+              <div class="bar-pair">
+                <div class="bar bar-green" style="height:25%"></div>
+                <div class="bar bar-red" style="height:6%"></div>
+              </div>
               <span class="bar-day">Sabado</span>
             </div>
+
             <div class="bar-group">
-              <div class="bar-pair"><div class="bar bar-green" style="height:0%"></div><div class="bar bar-red" style="height:6%"></div></div>
+              <div class="bar-pair">
+                <div class="bar bar-green" style="height:0%"></div>
+                <div class="bar bar-red" style="height:6%"></div>
+              </div>
               <span class="bar-day">Domingo</span>
             </div>
+
           </div>
+
           <div class="graph-baseline">0</div>
+
         </div>
+
       </div>
+
     </section>
 
-    <!-- Gastos vista -->
+
+    <!-- ===================== GASTOS VISTA ===================== -->
     <section class="card expense-card">
+
       <div class="card-header dark expense-header">
         <h2>Gastos vista</h2>
-        <button class="menu-btn" aria-label="Menu"><img src="/images/menu.png" alt="Menu" class="menu-img"></button>
+
+        <button class="menu-btn" aria-label="Menu">
+          <img
+            src="/images/menu.png"
+            alt="Menu"
+            class="menu-img"
+          >
+        </button>
       </div>
+
       <ul class="list-items expense">
+
         <li>
           <span>Pago de internet</span>
+
           <span class="amount">Q50</span>
-          <span class="status status-x" aria-hidden="true">
-            <img src="/images/cancel.png" alt="cancelar" class="status-icon">
+
+          <span
+            class="status status-x"
+            aria-hidden="true"
+          >
+            <img
+              src="/images/cancel.png"
+              alt="cancelar"
+              class="status-icon"
+            >
           </span>
         </li>
+
         <li>
           <span>Pago de local</span>
+
           <span class="amount">Q900</span>
-          <span class="status status-x" aria-hidden="true">
-            <img src="/images/cancel.png" alt="cancelar" class="status-icon">
+
+          <span
+            class="status status-x"
+            aria-hidden="true"
+          >
+            <img
+              src="/images/cancel.png"
+              alt="cancelar"
+              class="status-icon"
+            >
           </span>
         </li>
+
       </ul>
+
     </section>
 
-    <!-- Total de ahorro -->
+
+    <!-- ===================== TOTAL DE AHORRO ===================== -->
     <section class="card stat-card stat-tight">
+
       <div class="card-header dark centered small">
         <h2>Total de ahorro</h2>
       </div>
+
       <div class="stat-body">
-        <span class="stat-value stat-green">Q500.00</span>
+        <span class="stat-value stat-green">
+          Q500.00
+        </span>
       </div>
+
     </section>
 
-    <!-- Impuestos a pagar -->
+
+    <!-- ===================== IMPUESTOS A PAGAR ===================== -->
     <section class="card stat-card stat-tight">
+
       <div class="card-header dark centered small">
         <h2>Impuestos a pagar</h2>
       </div>
+
       <div class="stat-body">
-        <span class="stat-value stat-neutral">Q1050.00</span>
+        <span class="stat-value stat-neutral">
+          Q1050.00
+        </span>
       </div>
+
     </section>
 
-    <!-- Proximos eventos -->
+
+    <!-- ===================== PROXIMOS EVENTOS ===================== -->
     <section class="card events-card">
+
       <div class="card-header dark centered small">
         <h2>Pr&oacute;ximos eventos</h2>
       </div>
+
       <ul class="events-list">
+
         <li>
           <span class="event-date">30/08/2026</span>
           <span class="event-desc">Pago de impuesto</span>
         </li>
+
         <li>
           <span class="event-date">08/09/2026</span>
-          <span class="event-desc">Cobro a la empresa Max</span>
+          <span class="event-desc">
+            Cobro a la empresa Max
+          </span>
         </li>
+
       </ul>
+
     </section>
 
-    <!-- Calendario -->
+
+    <!-- ===================== CALENDARIO ===================== -->
     <section class="card calendar-card">
+
       <div class="card-header dark centered small">
         <h2>Calendario</h2>
       </div>
-      <div class="calendar-icon" aria-hidden="true">
-        <img src="/images/calendario.png" alt="Calendario" class="calendar-img">
+
+      <div
+        class="calendar-icon"
+        aria-hidden="true"
+      >
+        <img
+          src="/images/calendario.png"
+          alt="Calendario"
+          class="calendar-img"
+        >
       </div>
+
     </section>
 
-    <!-- Fondo de emergencia -->
+
+    <!-- ===================== FONDO DE EMERGENCIA ===================== -->
     <section class="card stat-card">
+
       <div class="card-header dark centered small">
         <h2>Fondo de emergencia</h2>
       </div>
+
       <div class="stat-body">
-        <span class="stat-value stat-neutral">Q10,000.00</span>
+        <span class="stat-value stat-neutral">
+          Q10,000.00
+        </span>
       </div>
+
     </section>
 
-    <!-- Total de gasto planeado -->
+
+    <!-- ===================== TOTAL DE GASTO PLANEADO ===================== -->
     <section class="card stat-card">
+
       <div class="card-header dark centered small">
         <h2>Total de Gasto planeado</h2>
       </div>
+
       <div class="stat-body">
-        <span class="stat-value stat-red">Q10,000.00</span>
+        <span class="stat-value stat-red">
+          Q10,000.00
+        </span>
       </div>
+
     </section>
 
   </main>
+
+
+  <!-- ===================== MODALES DE INGRESOS ===================== -->
+
+  @if (mostrarSueldoFijo()) {
+    <app-sueldo-fijo-modal
+      (cerrar)="cerrarSueldoFijo()"
+      (guardar)="guardarSueldoFijo($event)">
+    </app-sueldo-fijo-modal>
+  }
+
+  @if (mostrarIngresosMenu()) {
+    <app-ingresos-menu-modal
+      (cerrar)="cerrarIngresosMenu()"
+      (seleccionar)="onSeleccionarTipoExtra($event)">
+    </app-ingresos-menu-modal>
+  }
+
+  @if (mostrarIngresoExtra()) {
+    <app-ingreso-extra-modal
+      [tipo]="tipoIngresoExtra()"
+      (cerrar)="cerrarIngresoExtra()"
+      (guardar)="guardarIngresoExtra($event)">
+    </app-ingreso-extra-modal>
+  }
+
+  @if (mostrarTablaCompleta()) {
+    <app-ingresos-tabla-modal
+      [ingresos]="ingresos()"
+      (cerrar)="cerrarTablaCompleta()"
+      (editar)="abrirEditarDesdeTabla($event)">
+    </app-ingresos-tabla-modal>
+  }
+
+  @if (mostrarEditar()) {
+    <app-ingreso-editar-modal
+      [ingresoId]="idParaEditar()"
+      (cerrar)="cerrarEditar()"
+      (actualizado)="onIngresoActualizado()"
+      (eliminado)="onIngresoEliminado()">
+    </app-ingreso-editar-modal>
+  }
+
 </div>
+
