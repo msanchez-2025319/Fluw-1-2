@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface LoginResponse {
@@ -23,13 +23,27 @@ export interface MeResponse {
 export class AuthService {
   private readonly apiUrl = `${environment.apiUrl}/auth`;
 
+  currentUser = signal<MeResponse | null>(null);
+
   constructor(private http: HttpClient) {}
+
+  init(): Observable<MeResponse | null> {
+    return this.http.get<MeResponse>(`${this.apiUrl}/me`, { withCredentials: true }).pipe(
+      tap(user => this.currentUser.set(user)),
+      catchError(() => {
+        this.currentUser.set(null);
+        return of(null);
+      }),
+    );
+  }
 
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(
       `${this.apiUrl}/login`,
       { email, password },
       { withCredentials: true }
+    ).pipe(
+      tap(response => this.currentUser.set(response.user)),
     );
   }
 
@@ -46,6 +60,8 @@ export class AuthService {
       `${this.apiUrl}/logout`,
       {},
       { withCredentials: true }
+    ).pipe(
+      tap(() => this.currentUser.set(null)),
     );
   }
 

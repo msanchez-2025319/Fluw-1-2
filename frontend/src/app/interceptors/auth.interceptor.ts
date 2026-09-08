@@ -13,17 +13,22 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
+  if (req.headers.get('X-Guard-Check') === 'true') {
+    return next(req);
+  }
+
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
-                const sessionTimer = inject(SessionTimerService);
+        const sessionTimer = inject(SessionTimerService);
         return authService.refresh().pipe(
           switchMap((response) => {
             sessionTimer.schedule(response.sessionExpiresAt);
             return next(req);
           }),
           catchError(() => {
-            router.navigateByUrl('/session-expired');
+            authService.currentUser.set(null);
+            router.navigateByUrl('/login');
             return throwError(() => error);
           })
         );
