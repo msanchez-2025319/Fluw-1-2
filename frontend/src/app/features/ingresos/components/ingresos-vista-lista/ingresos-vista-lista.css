@@ -1,0 +1,79 @@
+.empty-state { text-align: center; padding: 20px; color: var(--text-muted, #4c5a45); font-size: 0.85rem; margin: 0; }
+
+.horizontal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 95%;
+  margin: 0 auto;
+}
+
+.horizontal-item {
+  border-radius: 50px;
+  height: 45px;
+  background-color: #99a394;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.horizontal-item:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.item-content {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 12px;
+  position: relative;
+}
+
+.item-concept {
+  flex-grow: 1;
+  flex-shrink: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.85rem;
+  color: #333;
+  text-align: left;
+  padding: 0 8px;
+  font-weight: bold;
+}
+
+.item-amount {
+  flex-shrink: 0;
+  margin-right: 12px;
+  font-weight: bold;
+  color: #333;
+  text-align: right;
+  padding: 0 4px;
+}
+
+.item-delete {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.item-delete:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.delete-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}

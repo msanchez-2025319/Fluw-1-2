@@ -1,0 +1,17 @@
+@if (ingresos.length === 0) {
+  <p class="empty-state">Aún no hay ingresos registrados</p>
+} @else {
+  <div class="horizontal-list">
+    @for (ingreso of ingresos; track ingreso.id) {
+      <div class="horizontal-item">
+        <div class="item-content">
+          <span class="item-concept">{{ etiqueta(ingreso) }}</span>
+          <span class="item-amount">Q{{ ingreso.monto }}</span>
+          <button class="item-delete" (click)="eliminarIngreso(ingreso.id)" aria-label="Eliminar ingreso">
+            <img src="/images/cheque.png" alt="Eliminar" class="delete-icon">
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+}

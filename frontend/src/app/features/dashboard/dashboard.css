@@ -279,11 +279,15 @@
   object-fit: contain;
 }
 
+.income-header-actions { display: flex; gap: 6px; z-index: 2; position: relative; }
+.income-header-actions .menu-btn .icon-text { font-size: 1rem; color: var(--text-dark, #22301F); }
+
 /* Ingresos vista: titulo centrado y fondo de filas */
 .income-header{
   position: relative;
   justify-content: flex-end;
   padding-left: 50px;
+  background: #284834;
 }
 .income-header h2{
   position: absolute;
@@ -291,6 +295,8 @@
   right: 0;
   margin: 0 auto;
   text-align: center;
+  background: #284834;
+  color: #ffffff;
 }
 .income-card .list-items.income li{
   background: #99a394;
