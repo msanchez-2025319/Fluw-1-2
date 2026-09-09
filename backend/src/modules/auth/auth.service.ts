@@ -1,3 +1,4 @@
+
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
@@ -5,6 +6,7 @@ import { prisma } from "../../config/prisma.js";
 import type { JwtPayload } from "../../types/auth.types.js";
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
+
 export const ACCESS_TOKEN_EXPIRES_IN =
   process.env.ACCESS_TOKEN_EXPIRES_IN || "30m";
 
@@ -114,15 +116,15 @@ export async function refreshAccessToken(rawRefreshToken: string) {
     );
   }
 
-  // Sliding session: cada renovación con actividad extiende la expiración
-  // del refresh token a "ahora + tiempo de inactividad permitido".
   const newExpiresAt = new Date(
     Date.now() + parseDurationToMs(SESSION_IDLE_TIMEOUT)
   );
 
   await prisma.refreshToken.update({
     where: { id: storedToken.id },
-    data: { expiresAt: newExpiresAt },
+    data: {
+      expiresAt: newExpiresAt,
+    },
   });
 
   const payload: JwtPayload = {
@@ -146,13 +148,19 @@ export async function refreshAccessToken(rawRefreshToken: string) {
   };
 }
 
-export async function logoutUser(rawRefreshToken: string | undefined) {
-  if (!rawRefreshToken) return;
+export async function logoutUser(
+  rawRefreshToken: string | undefined
+) {
+  if (!rawRefreshToken) {
+    return;
+  }
 
   const tokenHash = hashToken(rawRefreshToken);
 
   await prisma.refreshToken.updateMany({
     where: { tokenHash },
-    data: { revoked: true },
+    data: {
+      revoked: true,
+    },
   });
 }

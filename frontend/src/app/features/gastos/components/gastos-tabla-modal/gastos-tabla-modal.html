@@ -1,0 +1,49 @@
+<div class="modal-overlay" (click)="onCerrar()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Gastos vista</h2>
+      <button type="button" class="modal-close" (click)="onCerrar()">
+        <img src="/images/cancel.png" alt="Cerrar" class="modal-close-img">
+      </button>
+    </div>
+
+    <div class="table-wrapper">
+      @if (gastos.length === 0) {
+        <p class="empty-state">Aún no hay gastos registrados</p>
+      } @else {
+        <table class="tabla-gastos">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Fecha</th>
+              <th>Descripción</th>
+              <th>Monto</th>
+              <th>Forma de pago</th>
+              <th>Estado</th>
+              <th>Categoría</th>
+              <th>Editar</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (gasto of gastos; track gasto.id) {
+              <tr>
+                <td>{{ gasto.id }}</td>
+                <td>{{ fechaFormateada(gasto.fecha) }}</td>
+                <td>{{ gasto.descripcion }}</td>
+                <td>Q{{ gasto.monto }}</td>
+                <td>{{ etiquetaFormaPago(gasto.formaPago) }}</td>
+                <td>{{ etiquetaEstado(gasto.estado) }}</td>
+                <td>{{ etiquetaCategoria(gasto.categoria) }}</td>
+                <td>
+                  <button type="button" class="row-editar" (click)="onEditar(gasto.id)">
+                    <img src="/images/editar.png" alt="Editar" class="row-editar-img">
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+</div>
