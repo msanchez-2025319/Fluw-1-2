@@ -18,11 +18,7 @@ export const routes: Routes = [
       import('./features/dashboard/dashboard').then((m) => m.Dashboard),
     canActivate: [authGuard],
   },
-  // ❌ ELIMINAR ESTA RUTA
-  // {
-  //   path: 'gastos',
-  //   loadComponent: () => import('./features/gastos/gastos.component').then(m => m.GastosComponent)
-  // },
+
   {
     path: 'session-expired',
     loadComponent: () =>

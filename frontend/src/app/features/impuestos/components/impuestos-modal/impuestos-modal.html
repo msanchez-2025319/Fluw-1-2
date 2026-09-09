@@ -1,0 +1,44 @@
+<div class="modal-overlay" (click)="onCerrar()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2>Impuestos</h2>
+
+      <div class="mes-selector">
+        <button type="button" class="mes-flecha" (click)="mesAnterior()" aria-label="Mes anterior">&lt;</button>
+        <span class="mes-texto">{{ etiquetaMes() }}</span>
+        <button type="button" class="mes-flecha" (click)="mesSiguiente()" aria-label="Mes siguiente">&gt;</button>
+      </div>
+
+      <button type="button" class="modal-close" (click)="onCerrar()" aria-label="Cerrar">
+        <img src="/images/cancel.png" alt="Cerrar" class="modal-close-img">
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      @if (cargando()) {
+        <p class="estado-texto">Cargando información de impuestos...</p>
+      } @else if (error()) {
+        <p class="estado-texto estado-error">{{ error() }}</p>
+      } @else if (resumen()) {
+
+        <div class="impuesto-card">
+          <p>Ingresos extras total: <strong>{{ formatoMoneda(resumen()!.ingresosExtra.totalIngresos) }}</strong></p>
+          <p>Monto de impuesto por pagar: <strong>{{ formatoMoneda(resumen()!.ingresosExtra.totalImpuesto) }}</strong></p>
+        </div>
+
+        <div class="impuesto-card">
+          <p>Ingresos variables total: <strong>{{ formatoMoneda(resumen()!.ingresosVariados.totalIngresos) }}</strong></p>
+          <p>Monto de impuesto por pagar: <strong>{{ formatoMoneda(resumen()!.ingresosVariados.totalImpuesto) }}</strong></p>
+        </div>
+
+        <div class="impuesto-card impuesto-total">
+          <p>Total de impuesto a pagar: <strong>{{ formatoMoneda(resumen()!.totalImpuestos) }}</strong></p>
+        </div>
+
+      }
+
+    </div>
+  </div>
+</div>

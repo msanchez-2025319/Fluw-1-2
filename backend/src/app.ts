@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./modules/auth/auth.routes.js";
 import ingresosRoutes from "./modules/ingresos/ingresos.routes.js";
 import gastosRoutes from "./modules/gastos/gastos.routes.js";
+import impuestosRoutes from "./modules/impuestos/impuestos.routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
