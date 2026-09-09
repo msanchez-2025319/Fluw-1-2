@@ -16,6 +16,7 @@ model User {
   updatedAt     DateTime       @updatedAt
   refreshTokens RefreshToken[]
   ingresos      Ingreso[]
+  gastos        Gasto[]
 
   @@map("users")
 }
@@ -89,4 +90,43 @@ enum CuentaDestino {
   CONSUMO_PERSONAL
   CUENTAS_BANCARIAS
   OTROS
+}
+
+//GASTOS
+
+model Gasto {
+  id            Int           @id @default(autoincrement())
+  fecha         DateTime
+  descripcion   String
+  monto         Decimal       @db.Decimal(10, 2)
+  formaPago     FormaPago
+  estado        EstadoGasto
+  categoria     CategoriaGasto
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("gastos")
+}
+
+
+enum FormaPago {
+  EFECTIVO
+  TARJETA
+  TRANSFERENCIA
+  OTRO
+}
+
+enum EstadoGasto {
+  PAGADO
+  POR_PAGAR
+  DEBIENDO_A_OTRO
+}
+
+enum CategoriaGasto {
+  EMPRESA
+  PERSONAL
+  TRABAJO
+  OTRO
 }

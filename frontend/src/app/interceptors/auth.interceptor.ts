@@ -8,6 +8,7 @@ import { SessionTimerService } from '../services/session-timer.service';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const authService = inject(AuthService);
+  const sessionTimer = inject(SessionTimerService);
 
   if (req.url.includes('/auth/login') || req.url.includes('/auth/refresh')) {
     return next(req);
@@ -20,7 +21,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
-        const sessionTimer = inject(SessionTimerService);
         return authService.refresh().pipe(
           switchMap((response) => {
             sessionTimer.schedule(response.sessionExpiresAt);
@@ -33,6 +33,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           })
         );
       }
+
       return throwError(() => error);
     })
   );

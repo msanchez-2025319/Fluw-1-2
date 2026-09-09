@@ -1,0 +1,20 @@
+@if (gastos.length === 0) {
+  <p class="empty-state">Aún no hay gastos registrados</p>
+} @else {
+  <div class="horizontal-list">
+    @for (gasto of gastos; track gasto.id) {
+      <div class="horizontal-item">
+        <div class="item-content">
+          <span class="item-concept">
+            {{ gasto.descripcion }}
+            <span class="item-categoria">({{ etiquetaCategoria(gasto.categoria) }})</span>
+          </span>
+          <span class="item-amount">Q{{ gasto.monto }}</span>
+          <button class="item-delete" (click)="eliminarGasto(gasto.id)" aria-label="Eliminar gasto">
+            <img src="/images/cheque.png" alt="Eliminar" class="delete-icon">
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+}

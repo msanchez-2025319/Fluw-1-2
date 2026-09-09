@@ -1,0 +1,18 @@
+<div class="modal-overlay" (click)="onCerrar()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Gastos</h2>
+      <button class="modal-close" (click)="onCerrar()">
+        <img src="/images/cancel.png" alt="Cerrar" class="modal-close-img">
+      </button>
+    </div>
+    <div class="modal-body">
+      <button type="button" class="menu-option" (click)="onSeleccionar('CREAR')">
+        Registrar Gasto <span class="chevron">&gt;</span>
+      </button>
+      <button type="button" class="menu-option" (click)="onSeleccionar('VER_TABLA')">
+        Ver Gastos <span class="chevron">&gt;</span>
+      </button>
+    </div>
+  </div>
+</div>

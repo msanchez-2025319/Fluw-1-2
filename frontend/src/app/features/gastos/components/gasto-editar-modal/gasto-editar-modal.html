@@ -1,0 +1,66 @@
+<div class="modal-overlay" (click)="onCerrar()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Actualizar o eliminar</h2>
+      <button type="button" class="modal-close" (click)="onCerrar()">
+        <img src="/images/cancel.png" alt="Cerrar" class="modal-close-img">
+      </button>
+    </div>
+
+    <div class="modal-body">
+      @if (cargando()) {
+        <p class="loading-text">Cargando gasto...</p>
+      } @else if (gastoCargado()) {
+        <!-- ID (solo lectura) -->
+        <div class="id-display">
+          <span class="id-label">ID:</span>
+          <span class="id-value">{{ gastoCargado()!.id }}</span>
+        </div>
+
+        <input class="field-input" type="date" placeholder="Fecha de gasto"
+          [ngModel]="fecha()" (ngModelChange)="fecha.set($event)" />
+
+        <input class="field-input" type="text" placeholder="Descripción del gasto"
+          [ngModel]="descripcion()" (ngModelChange)="descripcion.set($event)" />
+
+        <input class="field-input" type="number" min="0" step="0.01" placeholder="Monto"
+          [ngModel]="monto()" (ngModelChange)="monto.set($event)" />
+
+        <app-dropdown-select label="Forma de pago" [options]="opcionesFormaPago"
+          [value]="formaPago()" (valueChange)="formaPago.set($any($event))"></app-dropdown-select>
+
+        <app-dropdown-select label="Estado" [options]="opcionesEstado"
+          [value]="estado()" (valueChange)="estado.set($any($event))"></app-dropdown-select>
+
+        <app-dropdown-select label="Categoría" [options]="opcionesCategoria"
+          [value]="categoria()" (valueChange)="categoria.set($any($event))"></app-dropdown-select>
+
+        @if (errorMensaje()) {
+          <p class="field-error">{{ errorMensaje() }}</p>
+        }
+        @if (mensajeExito()) {
+          <p class="field-success">{{ mensajeExito() }}</p>
+        }
+        @if (confirmandoEliminar()) {
+          <p class="field-error">¿Seguro que deseas eliminar este gasto? Esta acción no se puede deshacer.</p>
+        }
+      } @else {
+        <p class="field-error">No se encontró el gasto</p>
+      }
+    </div>
+
+    @if (gastoCargado()) {
+      <div class="modal-footer">
+        @if (!confirmandoEliminar()) {
+          <button type="button" class="btn-guardar" (click)="onGuardar()" [disabled]="guardando()">
+            {{ guardando() ? 'Guardando...' : 'Guardar' }}
+          </button>
+          <button type="button" class="btn-eliminar" (click)="onEliminarClick()">Eliminar</button>
+        } @else {
+          <button type="button" class="btn-guardar" (click)="onCancelarEliminar()">Cancelar</button>
+          <button type="button" class="btn-eliminar" (click)="onConfirmarEliminar()">Confirmar</button>
+        }
+      </div>
+    }
+  </div>
+</div>
