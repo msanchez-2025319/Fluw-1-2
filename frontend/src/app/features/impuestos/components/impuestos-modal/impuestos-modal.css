@@ -1,0 +1,312 @@
+:host {
+  display: block;
+}
+
+/* =========================
+   FONDO
+   ========================= */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 12px;
+
+  background: rgba(20, 35, 25, 0.28);
+}
+
+/* =========================
+   MODAL
+   ========================= */
+
+.modal-impuestos {
+  width: 360px;
+  max-width: calc(100vw - 24px);
+
+  padding: 16px 13px;
+
+  border-radius: 18px;
+
+  background: #23482f;
+
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.18);
+}
+
+/* =========================
+   HEADER
+   ========================= */
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding:
+    0
+    10px
+    14px;
+}
+
+.modal-header h2 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* =========================
+   ACCIONES HEADER
+   ========================= */
+
+.acciones-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+}
+
+/* =========================
+   BOTÓN FECHA
+   ========================= */
+
+.fecha-contenedor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 140px;
+  height: 36px;
+
+  padding:
+    0
+    16px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: #ffffff;
+
+  cursor: pointer;
+}
+
+.fecha-visible {
+  color: #000000;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  text-transform: lowercase;
+
+  white-space: nowrap;
+}
+
+.fecha-contenedor:hover {
+  background: #f8f8f8;
+}
+
+/* =========================
+   INPUT REAL DEL MES
+   ========================= */
+
+.selector-mes-real {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+/* =========================
+   CERRAR
+   ========================= */
+
+.boton-cerrar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 11px;
+
+  background: #d5c8b4;
+  color: #263b2e;
+
+  font-size: 25px;
+  font-weight: 400;
+
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.boton-cerrar:hover {
+  background: #e3d8c7;
+}
+
+/* =========================
+   PANEL CREMA
+   ========================= */
+
+.panel-contenido {
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+
+  padding:
+    13px
+    9px
+    20px;
+
+  border-radius: 18px;
+
+  background: #f6f1e5;
+}
+
+/* =========================
+   TARJETAS
+   ========================= */
+
+.tarjeta-impuesto {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  min-height: 86px;
+
+  padding:
+    15px
+    18px;
+
+  border-radius: 21px;
+
+  background: #aab2a5;
+
+  text-align: center;
+}
+
+.tarjeta-impuesto p {
+  margin: 2px 0;
+
+  color: #171717;
+
+  font-size: 14px;
+  font-weight: 400;
+
+  line-height: 1.45;
+}
+
+.tarjeta-impuesto strong {
+  color: #171717;
+
+  font-weight: 400;
+}
+
+/* =========================
+   TOTAL
+   ========================= */
+
+.tarjeta-total {
+  min-height: 48px;
+
+  padding:
+    10px
+    16px;
+}
+
+.tarjeta-total p {
+  margin: 0;
+}
+
+/* =========================
+   ERROR
+   ========================= */
+
+.estado-error {
+  padding: 20px;
+
+  border-radius: 18px;
+
+  background: #aab2a5;
+
+  color: #171717;
+
+  text-align: center;
+
+  font-size: 14px;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 420px) {
+
+  .modal-impuestos {
+    width: 100%;
+  }
+
+  .modal-header {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .modal-header h2 {
+    font-size: 18px;
+  }
+
+  .fecha-contenedor {
+    min-width: 130px;
+
+    height: 34px;
+
+    padding:
+      0
+      12px;
+  }
+
+  .fecha-visible {
+    font-size: 13px;
+
+    color: #000000;
+  }
+
+  .boton-cerrar {
+    width: 34px;
+    height: 34px;
+  }
+
+  .tarjeta-impuesto {
+    min-height: 80px;
+
+    padding:
+      13px
+      12px;
+  }
+
+  .tarjeta-impuesto p {
+    font-size: 13px;
+  }
+}
