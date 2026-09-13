@@ -486,7 +486,6 @@
   flex: 1;
 }
 .events-list li span{ text-align: center; }
-.events-list li:last-child{ }
 .event-date{ color: var(--text-muted); min-width: 90px; }
 .event-desc{ color: var(--text-dark); }
 
