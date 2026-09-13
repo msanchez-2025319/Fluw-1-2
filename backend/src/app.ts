@@ -2,6 +2,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+
 import authRoutes from "./modules/auth/auth.routes.js";
 import ingresosRoutes from "./modules/ingresos/ingresos.routes.js";
 import gastosRoutes from "./modules/gastos/gastos.routes.js";
@@ -23,9 +24,12 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/ingresos", ingresosRoutes);
 app.use("/api/gastos", gastosRoutes);
+app.use("/api/impuestos", impuestosRoutes);
 
 app.use((req, res) => {
-  res.status(404).json({ message: "Ruta no encontrada" });
+  res.status(404).json({
+    message: "Ruta no encontrada",
+  });
 });
 
 app.listen(PORT, () => {

@@ -1,82 +1,135 @@
-import { Component, EventEmitter, OnInit, Output, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ImpuestosService } from '../../../../services/impuestos.service';
-import { ResumenImpuestos } from '../../models/impuesto.model';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  OnInit,
+  Output,
+  ViewChild,
+  signal
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+import {
+  ImpuestosService,
+  ResumenImpuestos
+} from '../../../../services/impuestos.service';
 
 @Component({
   selector: 'app-impuestos-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
   templateUrl: './impuestos-modal.html',
-  styleUrl: './impuestos-modal.css',
+  styleUrl: './impuestos-modal.css'
 })
 export class ImpuestosModal implements OnInit {
+
   @Output() cerrar = new EventEmitter<void>();
 
-  private impuestosService = inject(ImpuestosService);
+  @ViewChild('selectorMes')
+  selectorMes!: ElementRef<HTMLInputElement>;
+
+  mesSeleccionado = '';
 
   cargando = signal(true);
-  error = signal<string | null>(null);
+  error = signal('');
   resumen = signal<ResumenImpuestos | null>(null);
 
-  // Mes que se está consultando, formato "YYYY-MM". Empieza en el mes actual.
-  mesSeleccionado = signal<string>(this.formatearMes(new Date()));
-
-  // Texto legible para mostrar en el encabezado, ej. "Septiembre 2026"
-  etiquetaMes = computed(() => {
-    const [anio, mes] = this.mesSeleccionado().split('-').map(Number);
-    const fecha = new Date(anio, mes - 1, 1);
-    const nombre = fecha.toLocaleDateString('es-GT', { month: 'long', year: 'numeric' });
-    return nombre.charAt(0).toUpperCase() + nombre.slice(1);
-  });
+  constructor(
+    private impuestosService: ImpuestosService
+  ) {}
 
   ngOnInit(): void {
-    this.cargarResumen();
+    const fechaActual = new Date();
+
+    const anio = fechaActual.getFullYear();
+
+    const mes = String(
+      fechaActual.getMonth() + 1
+    ).padStart(2, '0');
+
+    this.mesSeleccionado = `${anio}-${mes}`;
+
+    this.cargarImpuestos();
   }
 
-  private formatearMes(fecha: Date): string {
-    const anio = fecha.getFullYear();
-    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-    return `${anio}-${mes}`;
+  abrirCalendario(): void {
+    this.selectorMes.nativeElement.showPicker();
   }
 
-  cargarResumen(): void {
+  cargarImpuestos(): void {
+    if (!this.mesSeleccionado) {
+      return;
+    }
+
     this.cargando.set(true);
-    this.error.set(null);
-    this.impuestosService.obtenerResumen(this.mesSeleccionado()).subscribe({
-      next: (res) => {
-        this.resumen.set(res.resumen);
-        this.cargando.set(false);
-      },
-      error: (err: HttpErrorResponse) => {
-        console.error('[impuestos] Error al cargar resumen:', err);
-        this.error.set('No se pudo cargar la información de impuestos');
-        this.cargando.set(false);
-      },
-    });
+    this.error.set('');
+
+    this.impuestosService
+      .obtenerResumen(this.mesSeleccionado)
+      .subscribe({
+        next: (respuesta) => {
+          this.resumen.set(respuesta);
+          this.cargando.set(false);
+        },
+
+        error: (error) => {
+          console.error(
+            'Error al cargar impuestos:',
+            error
+          );
+
+          this.error.set(
+            'No se pudieron cargar los impuestos.'
+          );
+
+          this.cargando.set(false);
+        }
+      });
   }
 
-  mesAnterior(): void {
-    this.cambiarMes(-1);
+  cambiarMes(): void {
+    this.cargarImpuestos();
   }
 
-  mesSiguiente(): void {
-    this.cambiarMes(1);
+  obtenerMesTexto(): string {
+    if (!this.mesSeleccionado) {
+      return '';
+    }
+
+    const [anio, mes] =
+      this.mesSeleccionado.split('-');
+
+    const fecha = new Date(
+      Number(anio),
+      Number(mes) - 1,
+      1
+    );
+
+    return new Intl.DateTimeFormat(
+      'es-GT',
+      {
+        month: 'long',
+        year: 'numeric'
+      }
+    ).format(fecha);
   }
 
-  private cambiarMes(delta: number): void {
-    const [anio, mes] = this.mesSeleccionado().split('-').map(Number);
-    const fecha = new Date(anio, mes - 1 + delta, 1);
-    this.mesSeleccionado.set(this.formatearMes(fecha));
-    this.cargarResumen();
-  }
-
-  formatoMoneda(valor: number): string {
-    return `Q${valor.toFixed(2)}`;
-  }
-
-  onCerrar(): void {
+  cerrarModal(): void {
     this.cerrar.emit();
+  }
+
+  formatearMoneda(valor: number): string {
+    return new Intl.NumberFormat(
+      'es-GT',
+      {
+        style: 'currency',
+        currency: 'GTQ',
+        minimumFractionDigits: 2
+      }
+    ).format(valor);
   }
 }

@@ -1,118 +1,312 @@
-.modal-overlay {
+:host {
+  display: block;
+}
+
+/* =========================
+   FONDO
+   ========================= */
+
+.overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 200;
+
+  padding: 12px;
+
+  background: rgba(20, 35, 25, 0.28);
 }
 
-.modal-box {
-  width: 380px;
-  max-width: 92vw;
-  background: var(--header-dark, #23482F);
-  border-radius: 22px;
-  padding: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  max-height: 90vh;
-  overflow-y: auto;
+/* =========================
+   MODAL
+   ========================= */
+
+.modal-impuestos {
+  width: 360px;
+  max-width: calc(100vw - 24px);
+
+  padding: 16px 13px;
+
+  border-radius: 18px;
+
+  background: #23482f;
+
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.18);
 }
+
+/* =========================
+   HEADER
+   ========================= */
 
 .modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 10px;
-  margin-bottom: 16px;
-  padding: 4px 6px;
-  flex-wrap: wrap;
+
+  padding:
+    0
+    10px
+    14px;
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 1.3rem;
-  font-weight: 800;
+
   color: #ffffff;
+
+  font-size: 20px;
+  font-weight: 700;
 }
 
-.mes-selector {
+/* =========================
+   ACCIONES HEADER
+   ========================= */
+
+.acciones-header {
+  position: relative;
+
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 0.9rem;
+
+  gap: 7px;
 }
 
-.mes-flecha {
-  background: transparent;
-  border: none;
-  color: #ffffff;
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 2px 6px;
-  line-height: 1;
-}
-.mes-flecha:hover { opacity: 0.7; }
+/* =========================
+   BOTÓN FECHA
+   ========================= */
 
-.mes-texto {
-  min-width: 90px;
-  text-align: center;
-}
-
-.modal-close {
-  background: #d5c8b4;
-  border: none;
-  border-radius: 10px;
-  width: 34px;
-  height: 34px;
+.fecha-contenedor {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-.modal-close-img { width: 18px; height: 18px; object-fit: contain; }
-.modal-close:hover { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); }
 
-.modal-body {
-  background: #fbf3e3;
-  border-radius: 18px;
-  padding: 18px;
+  min-width: 140px;
+  height: 36px;
+
+  padding:
+    0
+    16px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: #ffffff;
+
+  cursor: pointer;
+}
+
+.fecha-visible {
+  color: #000000;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  text-transform: lowercase;
+
+  white-space: nowrap;
+}
+
+.fecha-contenedor:hover {
+  background: #f8f8f8;
+}
+
+/* =========================
+   INPUT REAL DEL MES
+   ========================= */
+
+.selector-mes-real {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+/* =========================
+   CERRAR
+   ========================= */
+
+.boton-cerrar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 11px;
+
+  background: #d5c8b4;
+  color: #263b2e;
+
+  font-size: 25px;
+  font-weight: 400;
+
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.boton-cerrar:hover {
+  background: #e3d8c7;
+}
+
+/* =========================
+   PANEL CREMA
+   ========================= */
+
+.panel-contenido {
   display: flex;
   flex-direction: column;
+
   gap: 14px;
+
+  padding:
+    13px
+    9px
+    20px;
+
+  border-radius: 18px;
+
+  background: #f6f1e5;
 }
 
-.impuesto-card {
-  background: var(--card-cream, #F6F1E5);
-  border: 1px solid var(--card-border, #E7DFC9);
-  border-radius: 16px;
-  padding: 16px 18px;
+/* =========================
+   TARJETAS
+   ========================= */
+
+.tarjeta-impuesto {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  min-height: 86px;
+
+  padding:
+    15px
+    18px;
+
+  border-radius: 21px;
+
+  background: #aab2a5;
+
   text-align: center;
 }
 
-.impuesto-card p {
-  margin: 4px 0;
-  font-size: 0.92rem;
-  color: var(--text-dark, #22301F);
+.tarjeta-impuesto p {
+  margin: 2px 0;
+
+  color: #171717;
+
+  font-size: 14px;
+  font-weight: 400;
+
+  line-height: 1.45;
 }
 
-.impuesto-card p strong { font-weight: 800; }
+.tarjeta-impuesto strong {
+  color: #171717;
 
-.impuesto-total { background: #E4DEC8; }
+  font-weight: 400;
+}
 
-.estado-texto {
+/* =========================
+   TOTAL
+   ========================= */
+
+.tarjeta-total {
+  min-height: 48px;
+
+  padding:
+    10px
+    16px;
+}
+
+.tarjeta-total p {
+  margin: 0;
+}
+
+/* =========================
+   ERROR
+   ========================= */
+
+.estado-error {
+  padding: 20px;
+
+  border-radius: 18px;
+
+  background: #aab2a5;
+
+  color: #171717;
+
   text-align: center;
-  font-weight: 600;
-  color: var(--text-dark, #22301F);
-  padding: 20px 0;
+
+  font-size: 14px;
 }
 
-.estado-error { color: var(--red-accent, #E1483A); }
+/* =========================
+   RESPONSIVE
+   ========================= */
 
-@media (max-width: 480px) {
-  .modal-box { width: 94vw; padding: 12px; }
-  .modal-header { justify-content: center; text-align: center; }
+@media (max-width: 420px) {
+
+  .modal-impuestos {
+    width: 100%;
+  }
+
+  .modal-header {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .modal-header h2 {
+    font-size: 18px;
+  }
+
+  .fecha-contenedor {
+    min-width: 130px;
+
+    height: 34px;
+
+    padding:
+      0
+      12px;
+  }
+
+  .fecha-visible {
+    font-size: 13px;
+
+    color: #000000;
+  }
+
+  .boton-cerrar {
+    width: 34px;
+    height: 34px;
+  }
+
+  .tarjeta-impuesto {
+    min-height: 80px;
+
+    padding:
+      13px
+      12px;
+  }
+
+  .tarjeta-impuesto p {
+    font-size: 13px;
+  }
 }

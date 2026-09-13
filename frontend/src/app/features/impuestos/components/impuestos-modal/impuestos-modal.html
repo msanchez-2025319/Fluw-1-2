@@ -1,44 +1,161 @@
-<div class="modal-overlay" (click)="onCerrar()">
-  <div class="modal-box" (click)="$event.stopPropagation()">
+@if (resumen(); as datos) {
 
-    <div class="modal-header">
-      <h2>Impuestos</h2>
+  <div class="overlay">
 
-      <div class="mes-selector">
-        <button type="button" class="mes-flecha" (click)="mesAnterior()" aria-label="Mes anterior">&lt;</button>
-        <span class="mes-texto">{{ etiquetaMes() }}</span>
-        <button type="button" class="mes-flecha" (click)="mesSiguiente()" aria-label="Mes siguiente">&gt;</button>
+    <section class="modal-impuestos">
+
+      <header class="modal-header">
+
+        <h2>
+          Impuestos
+        </h2>
+
+        <div class="acciones-header">
+
+          <button
+            type="button"
+            class="fecha-contenedor"
+            (click)="abrirCalendario()">
+
+            <span class="fecha-visible">
+              {{ obtenerMesTexto() }}
+            </span>
+
+          </button>
+
+          <input
+            #selectorMes
+            type="month"
+            [(ngModel)]="mesSeleccionado"
+            (change)="cambiarMes()"
+            class="selector-mes-real"
+          >
+
+          <button
+            type="button"
+            class="boton-cerrar"
+            (click)="cerrarModal()"
+            aria-label="Cerrar">
+            ×
+          </button>
+
+        </div>
+
+      </header>
+
+
+      <div class="panel-contenido">
+
+        <div class="tarjeta-impuesto">
+
+          <p>
+            Ingresos extras total:
+            <strong>
+              {{
+                formatearMoneda(
+                  datos.ingresosExtra.total
+                )
+              }}
+            </strong>
+          </p>
+
+          <p>
+            Monto de impuesto por pagar:
+            <strong>
+              {{
+                formatearMoneda(
+                  datos.ingresosExtra.impuesto
+                )
+              }}
+            </strong>
+          </p>
+
+        </div>
+
+
+        <div class="tarjeta-impuesto">
+
+          <p>
+            Ingresos variables total:
+            <strong>
+              {{
+                formatearMoneda(
+                  datos.ingresosVariables.total
+                )
+              }}
+            </strong>
+          </p>
+
+          <p>
+            Monto de impuesto por pagar:
+            <strong>
+              {{
+                formatearMoneda(
+                  datos.ingresosVariables.impuesto
+                )
+              }}
+            </strong>
+          </p>
+
+        </div>
+
+
+        <div
+          class="tarjeta-impuesto tarjeta-total">
+
+          <p>
+            Total de impuesto a pagar:
+            <strong>
+              {{
+                formatearMoneda(
+                  datos.totalImpuestos
+                )
+              }}
+            </strong>
+          </p>
+
+        </div>
+
       </div>
 
-      <button type="button" class="modal-close" (click)="onCerrar()" aria-label="Cerrar">
-        <img src="/images/cancel.png" alt="Cerrar" class="modal-close-img">
-      </button>
-    </div>
+    </section>
 
-    <div class="modal-body">
-
-      @if (cargando()) {
-        <p class="estado-texto">Cargando información de impuestos...</p>
-      } @else if (error()) {
-        <p class="estado-texto estado-error">{{ error() }}</p>
-      } @else if (resumen()) {
-
-        <div class="impuesto-card">
-          <p>Ingresos extras total: <strong>{{ formatoMoneda(resumen()!.ingresosExtra.totalIngresos) }}</strong></p>
-          <p>Monto de impuesto por pagar: <strong>{{ formatoMoneda(resumen()!.ingresosExtra.totalImpuesto) }}</strong></p>
-        </div>
-
-        <div class="impuesto-card">
-          <p>Ingresos variables total: <strong>{{ formatoMoneda(resumen()!.ingresosVariados.totalIngresos) }}</strong></p>
-          <p>Monto de impuesto por pagar: <strong>{{ formatoMoneda(resumen()!.ingresosVariados.totalImpuesto) }}</strong></p>
-        </div>
-
-        <div class="impuesto-card impuesto-total">
-          <p>Total de impuesto a pagar: <strong>{{ formatoMoneda(resumen()!.totalImpuestos) }}</strong></p>
-        </div>
-
-      }
-
-    </div>
   </div>
-</div>
+
+}
+
+
+@if (error()) {
+
+  <div class="overlay">
+
+    <section class="modal-impuestos">
+
+      <header class="modal-header">
+
+        <h2>
+          Impuestos
+        </h2>
+
+        <button
+          type="button"
+          class="boton-cerrar"
+          (click)="cerrarModal()">
+          ×
+        </button>
+
+      </header>
+
+      <div class="panel-contenido">
+
+        <div class="estado-error">
+          {{ error() }}
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+}

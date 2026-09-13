@@ -1,31 +1,39 @@
 import type { Request, Response } from "express";
-import { calcularImpuestos, ImpuestoError } from "./impuestos.service.js";
+import { obtenerResumenImpuestos } from "./impuestos.service.js";
 
-function manejarError(error: unknown, res: Response) {
-  if (error instanceof ImpuestoError) {
-    return res.status(error.statusCode).json({ message: error.message });
-  }
-  console.error("[impuestos] Error inesperado:", error);
-  return res.status(500).json({ message: "Error interno del servidor" });
-}
-
-function queryToString(valor: unknown): string | undefined {
-  if (Array.isArray(valor)) return valor.length > 0 ? String(valor[0]) : undefined;
-  if (valor === undefined || valor === null) return undefined;
-  return String(valor);
-}
-
-export async function obtenerResumen(req: Request, res: Response) {
+export async function obtenerImpuestos(
+  req: Request,
+  res: Response
+): Promise<void> {
   try {
-    // req.user viene del middleware requireAuth (JWT), igual que en Ingresos.
-    // Nunca se toma el userId desde el query ni desde el body: así evitamos
-    // que un usuario pueda consultar impuestos de otra persona.
-    const userId: string = req.user!.id;
-    const mes = queryToString(req.query.mes);
+    const userId = req.user?.id;
+    const mes = req.query.mes;
 
-    const resumen = await calcularImpuestos(userId, mes);
-    return res.status(200).json({ resumen });
+    if (!userId) {
+      res.status(401).json({
+        message: "Usuario no autenticado",
+      });
+      return;
+    }
+
+    if (typeof mes !== "string") {
+      res.status(400).json({
+        message: "El parámetro mes es obligatorio",
+      });
+      return;
+    }
+
+    const resumen = await obtenerResumenImpuestos(userId, mes);
+
+    res.status(200).json(resumen);
   } catch (error) {
-    return manejarError(error, res);
+    const mensaje =
+      error instanceof Error
+        ? error.message
+        : "Error al obtener el resumen de impuestos";
+
+    res.status(400).json({
+      message: mensaje,
+    });
   }
 }

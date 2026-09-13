@@ -1,96 +1,176 @@
 import { prisma } from "../../config/prisma.js";
-import { TASA_IMPUESTO_EXTRA, TASA_IMPUESTO_VARIADO } from "./impuestos.config.js";
-
-export class ImpuestoError extends Error {
-  statusCode: number;
-  constructor(message: string, statusCode = 400) {
-    super(message);
-    this.statusCode = statusCode;
-  }
-}
-
-export interface ResumenCategoriaImpuesto {
-  totalIngresos: number;
-  totalImpuesto: number;
-}
 
 export interface ResumenImpuestos {
-  mes: string; // formato "YYYY-MM", ej. "2026-09"
-  ingresosExtra: ResumenCategoriaImpuesto;
-  ingresosVariados: ResumenCategoriaImpuesto;
-  totalIngresos: number;
+  mes: string;
+
+  ingresosExtra: {
+    total: number;
+    impuesto: number;
+  };
+
+  ingresosVariables: {
+    total: number;
+    impuesto: number;
+  };
+
   totalImpuestos: number;
 }
 
-/**
- * Convierte el parámetro "mes" (YYYY-MM) en un rango de fechas [inicio, fin).
- * Si no se envía "mes", usa el mes actual.
- */
-function obtenerRangoMes(mes?: string): { inicio: Date; fin: Date; etiqueta: string } {
-  const ahora = new Date();
-  let anio = ahora.getFullYear();
-  let mesIndice = ahora.getMonth(); // 0 = enero, 11 = diciembre
+function obtenerRangoMes(mes: string) {
+  const formatoMes = /^\d{4}-\d{2}$/;
 
-  if (mes) {
-    const partes = mes.split("-");
-    if (partes.length !== 2) {
-      throw new ImpuestoError('El parámetro "mes" debe tener el formato YYYY-MM');
-    }
-    const anioParam = Number(partes[0]);
-    const mesParam = Number(partes[1]) - 1;
-
-    if (Number.isNaN(anioParam) || Number.isNaN(mesParam) || mesParam < 0 || mesParam > 11) {
-      throw new ImpuestoError('El parámetro "mes" no es válido');
-    }
-    anio = anioParam;
-    mesIndice = mesParam;
+  if (!formatoMes.test(mes)) {
+    throw new Error(
+      "El mes debe tener el formato YYYY-MM"
+    );
   }
 
-  const inicio = new Date(anio, mesIndice, 1, 0, 0, 0, 0);
-  const fin = new Date(anio, mesIndice + 1, 1, 0, 0, 0, 0); // primer día del mes siguiente (exclusivo)
-  const etiqueta = `${anio}-${String(mesIndice + 1).padStart(2, "0")}`;
+  const [anioTexto, mesTexto] =
+    mes.split("-");
 
-  return { inicio, fin, etiqueta };
-}
+  const anio =
+    Number(anioTexto);
 
-/**
- * Calcula el resumen de impuestos de un usuario para un mes específico.
- * Reutiliza los ingresos ya guardados en la tabla "ingresos" — no crea
- * ni duplica ninguna tabla nueva.
- */
-export async function calcularImpuestos(userId: string, mes?: string): Promise<ResumenImpuestos> {
-  const { inicio, fin, etiqueta } = obtenerRangoMes(mes);
+  const numeroMes =
+    Number(mesTexto);
 
-  // Traemos únicamente los ingresos EXTRA y VARIADO del usuario autenticado,
-  // dentro del rango de fechas del mes solicitado.
-  const ingresos = await prisma.ingreso.findMany({
-    where: {
-      userId,
-      tipo: { in: ["SUELDO_EXTRA", "SUELDO_VARIADO"] },
-      fecha: { gte: inicio, lt: fin },
-    },
-  });
-
-  let totalExtra = 0;
-  let totalVariado = 0;
-
-  for (const ingreso of ingresos) {
-    const monto = Number(ingreso.monto); // Decimal de Prisma -> number
-    if (ingreso.tipo === "SUELDO_EXTRA") {
-      totalExtra += monto;
-    } else if (ingreso.tipo === "SUELDO_VARIADO") {
-      totalVariado += monto;
-    }
+  if (
+    numeroMes < 1 ||
+    numeroMes > 12
+  ) {
+    throw new Error(
+      "El mes proporcionado no es válido"
+    );
   }
 
-  const impuestoExtra = totalExtra * TASA_IMPUESTO_EXTRA;
-  const impuestoVariado = totalVariado * TASA_IMPUESTO_VARIADO;
+  const fechaInicio =
+    new Date(
+      Date.UTC(
+        anio,
+        numeroMes - 1,
+        1
+      )
+    );
+
+  const fechaFin =
+    new Date(
+      Date.UTC(
+        anio,
+        numeroMes,
+        1
+      )
+    );
 
   return {
-    mes: etiqueta,
-    ingresosExtra: { totalIngresos: totalExtra, totalImpuesto: impuestoExtra },
-    ingresosVariados: { totalIngresos: totalVariado, totalImpuesto: impuestoVariado },
-    totalIngresos: totalExtra + totalVariado,
-    totalImpuestos: impuestoExtra + impuestoVariado,
+    fechaInicio,
+    fechaFin
+  };
+}
+
+function calcularIvaIncluido(
+  total: number
+): number {
+  const iva =
+    total * 12 / 112;
+
+  return Number(
+    iva.toFixed(2)
+  );
+}
+
+export async function obtenerResumenImpuestos(
+  userId: string,
+  mes: string
+): Promise<ResumenImpuestos> {
+
+  const {
+    fechaInicio,
+    fechaFin
+  } = obtenerRangoMes(mes);
+
+  const ingresos =
+  await prisma.ingreso.findMany({
+    where: {
+      userId,
+
+      fecha: {
+        gte: fechaInicio,
+        lt: fechaFin
+      }
+    },
+
+    select: {
+      tipo: true,
+      monto: true,
+      fecha: true
+    }
+  });
+
+console.log(
+  "INGRESOS PARA IMPUESTOS:",
+  ingresos
+);
+
+  let totalIngresosExtra = 0;
+  let totalIngresosVariables = 0;
+
+  for (const ingreso of ingresos) {
+
+    const monto =
+      Number(ingreso.monto);
+
+    if (
+      ingreso.tipo ===
+      "SUELDO_EXTRA"
+    ) {
+      totalIngresosExtra += monto;
+    }
+
+    if (
+      ingreso.tipo ===
+      "SUELDO_VARIADO"
+    ) {
+      totalIngresosVariables += monto;
+    }
+  }
+
+  const impuestoIngresosExtra =
+    calcularIvaIncluido(
+      totalIngresosExtra
+    );
+
+  const impuestoIngresosVariables =
+    calcularIvaIncluido(
+      totalIngresosVariables
+    );
+
+  const totalImpuestos =
+    Number(
+      (
+        impuestoIngresosExtra +
+        impuestoIngresosVariables
+      ).toFixed(2)
+    );
+
+  return {
+    mes,
+
+    ingresosExtra: {
+      total:
+        totalIngresosExtra,
+
+      impuesto:
+        impuestoIngresosExtra
+    },
+
+    ingresosVariables: {
+      total:
+        totalIngresosVariables,
+
+      impuesto:
+        impuestoIngresosVariables
+    },
+
+    totalImpuestos
   };
 }
