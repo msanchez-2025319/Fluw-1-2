@@ -510,36 +510,73 @@
 
       </div>
 
-      <ul class="events-list">
 
-        <li>
-          <span class="event-date">
-            30/08/2026
-          </span>
+      @if (cargandoEventos()) {
 
-          <span class="event-desc">
-            Pago de impuesto
-          </span>
-        </li>
+        <div class="events-state">
+          Cargando eventos...
+        </div>
 
-        <li>
-          <span class="event-date">
-            08/09/2026
-          </span>
+      } @else if (errorEventos()) {
 
-          <span class="event-desc">
-            Cobro a la empresa Max
-          </span>
-        </li>
+        <div class="events-state events-error">
+          {{ errorEventos() }}
+        </div>
 
-      </ul>
+      } @else if (eventosDashboard().length === 0) {
+
+        <div class="events-state">
+          No hay próximos eventos
+        </div>
+
+      } @else {
+
+        <ul class="events-list">
+
+          @for (
+            evento of eventosDashboard();
+            track evento.id
+          ) {
+
+            <li>
+
+              <span class="event-date">
+
+                {{
+                  evento.fecha
+                    .slice(0, 10)
+                    .split('-')
+                    .reverse()
+                    .join('/')
+                }}
+
+              </span>
+
+              <span class="event-desc">
+                {{ evento.descripcion }}
+              </span>
+
+            </li>
+
+          }
+
+        </ul>
+
+      }
 
     </section>
 
 
     <!-- ===================== CALENDARIO ===================== -->
 
-    <section class="card calendar-card">
+    <section
+      class="card calendar-card calendar-clickable"
+      role="button"
+      tabindex="0"
+      aria-label="Abrir calendario de eventos"
+      (click)="abrirEventos()"
+      (keydown.enter)="abrirEventos()"
+      (keydown.space)="abrirEventos(); $event.preventDefault()">
 
       <div class="card-header dark centered small">
 
@@ -555,7 +592,7 @@
 
         <img
           src="/images/calendario.png"
-          alt="Calendario"
+          alt=""
           class="calendar-img">
 
       </div>
@@ -718,6 +755,22 @@
     <app-impuestos-modal
       (cerrar)="cerrarImpuestos()">
     </app-impuestos-modal>
+
+  }
+
+
+  <!-- =====================================================
+       MODAL DE EVENTOS
+       ===================================================== -->
+
+
+  @if (mostrarEventos()) {
+
+    <app-eventos-modal
+      [visible]="mostrarEventos()"
+      (cerrar)="cerrarEventos()"
+      (eventosActualizados)="actualizarEventos()">
+    </app-eventos-modal>
 
   }
 
