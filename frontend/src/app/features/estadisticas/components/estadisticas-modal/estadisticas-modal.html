@@ -1,0 +1,200 @@
+<div
+  class="estadisticas-overlay"
+  (click)="cerrarModal()"
+>
+  <section
+    class="estadisticas-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Estadísticas financieras"
+    (click)="$event.stopPropagation()"
+  >
+    <header class="modal-header">
+      <h2>Grafica</h2>
+
+      <button
+        type="button"
+        class="btn-cerrar"
+        aria-label="Cerrar"
+        (click)="cerrarModal()"
+      >
+        <img
+          src="images/cancel.png"
+          alt="Cerrar"
+          class="btn-cerrar-img"
+        />
+      </button>
+    </header>
+
+    <div class="periodos">
+      <button
+        type="button"
+        [class.activo]="periodo() === 'diario'"
+        (click)="seleccionarPeriodo('diario')"
+      >
+        Día
+      </button>
+
+      <button
+        type="button"
+        [class.activo]="periodo() === 'semanal'"
+        (click)="seleccionarPeriodo('semanal')"
+      >
+        Semanal
+      </button>
+
+      <button
+        type="button"
+        [class.activo]="periodo() === 'mensual'"
+        (click)="seleccionarPeriodo('mensual')"
+      >
+        Mensual
+      </button>
+
+      <button
+        type="button"
+        [class.activo]="periodo() === 'anual'"
+        (click)="seleccionarPeriodo('anual')"
+      >
+        Anual
+      </button>
+    </div>
+
+    <div class="tipos-datos">
+      <button
+        type="button"
+        [class.activo]="tipoVisualizacion() === 'ambos'"
+        (click)="seleccionarVisualizacion('ambos')"
+      >
+        Ingresos y gastos
+      </button>
+
+      <button
+        type="button"
+        [class.activo]="tipoVisualizacion() === 'ingresos'"
+        (click)="seleccionarVisualizacion('ingresos')"
+      >
+        Ingresos
+      </button>
+
+      <button
+        type="button"
+        [class.activo]="tipoVisualizacion() === 'gastos'"
+        (click)="seleccionarVisualizacion('gastos')"
+      >
+        Gastos
+      </button>
+    </div>
+
+    @if (cargando()) {
+      <div class="estado">
+        Cargando gráfica...
+      </div>
+    } @else if (error()) {
+      <div class="estado error">
+        {{ error() }}
+      </div>
+    } @else if (estadisticas(); as resultado) {
+      <div class="leyenda">
+        @if (mostrarIngresos()) {
+          <span>
+            <i class="punto ingreso"></i>
+            Ingreso
+          </span>
+        }
+
+        @if (mostrarGastos()) {
+          <span>
+            <i class="punto gasto"></i>
+            Gasto
+          </span>
+        }
+      </div>
+
+      <div class="grafica-scroll">
+        <div
+          class="grafica"
+          [class.grafica-mensual]="periodo() === 'mensual'"
+        >
+          <div class="linea-guia linea-superior">
+            <span>2.000</span>
+          </div>
+
+          <div class="linea-guia linea-inferior">
+            <span>0</span>
+          </div>
+
+          @for (
+            punto of datos();
+            track punto.etiqueta
+          ) {
+            <div class="grupo-barra">
+              <div class="contenedor-barras">
+                @if (mostrarIngresos()) {
+                  <div
+                    class="barra barra-ingreso"
+                    [style.height.%]="altura(punto.ingresos)"
+                    [title]="'Ingresos: ' + formatearMoneda(punto.ingresos)"
+                  ></div>
+                }
+
+                @if (mostrarGastos()) {
+                  <div
+                    class="barra barra-gasto"
+                    [style.height.%]="altura(punto.gastos)"
+                    [title]="'Gastos: ' + formatearMoneda(punto.gastos)"
+                  ></div>
+                }
+              </div>
+
+              <span class="etiqueta">
+                {{ punto.etiqueta }}
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="totales">
+        <article class="total-card">
+          <span>Ingresos totales</span>
+
+          <strong class="positivo">
+            {{
+              formatearMoneda(
+                resultado.totalIngresos
+              )
+            }}
+          </strong>
+        </article>
+
+        <article class="total-card">
+          <span>Gastos totales</span>
+
+          <strong class="negativo">
+            {{
+              formatearMoneda(
+                resultado.totalGastos
+              )
+            }}
+          </strong>
+        </article>
+
+        <article class="total-card">
+          <span>Balance</span>
+
+          <strong
+            [class.positivo]="resultado.balance >= 0"
+            [class.negativo]="resultado.balance < 0"
+          >
+            {{
+              formatearMoneda(
+                resultado.balance
+              )
+            }}
+          </strong>
+        </article>
+      </div>
+    }
+  </section>
+</div>

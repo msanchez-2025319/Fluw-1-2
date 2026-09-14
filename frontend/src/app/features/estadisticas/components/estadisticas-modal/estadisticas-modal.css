@@ -1,0 +1,506 @@
+:host {
+  --verde-oscuro: #244d35;
+  --verde-grafica: #72d653;
+  --rojo-grafica: #ff3030;
+  --crema: #fff7e8;
+  --beige: #d9cbb4;
+  --beige-hover: #cdbda2;
+  --texto: #8fa091;
+  --fondo-overlay: #a8b3a3;
+  --linea: #e7decc;
+}
+
+.estadisticas-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 16px;
+
+  background: var(--fondo-overlay);
+}
+
+.estadisticas-modal {
+  width: min(585px, 96vw);
+  max-height: 96vh;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  background: var(--crema);
+
+  border-radius: 22px;
+
+  padding: 12px 22px 24px;
+
+  box-shadow: none;
+}
+
+.modal-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+
+  min-height: 64px;
+
+  margin-bottom: 14px;
+
+  background: var(--verde-oscuro);
+
+  border-radius: 11px;
+}
+
+.modal-header h2 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 20px;
+  font-weight: 500;
+
+  text-align: center;
+}
+
+.btn-cerrar {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+
+  transform: translateY(-50%);
+
+  width: 41px;
+  height: 41px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: var(--beige);
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 8px;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.btn-cerrar:hover {
+  background: var(--beige-hover);
+
+  transform:
+    translateY(-50%)
+    scale(1.04);
+}
+
+.btn-cerrar-img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+}
+
+.periodos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 18px;
+
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.periodos button {
+  width: 80px;
+  height: 36px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: var(--beige);
+
+  color: var(--texto);
+
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.periodos button:hover {
+  background: var(--beige-hover);
+
+  transform: translateY(-1px);
+}
+
+.periodos button.activo {
+  background: var(--verde-oscuro);
+  color: #ffffff;
+}
+
+.tipos-datos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 24px;
+
+  margin-bottom: 28px;
+}
+
+.tipos-datos button {
+  min-width: 115px;
+  height: 36px;
+
+  padding: 0 14px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: var(--beige);
+
+  color: var(--texto);
+
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.tipos-datos button:hover {
+  background: var(--beige-hover);
+
+  transform: translateY(-1px);
+}
+
+.tipos-datos button.activo {
+  background: var(--verde-oscuro);
+  color: #ffffff;
+}
+
+.leyenda {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 15px;
+
+  margin-bottom: 5px;
+
+  color: #4e554f;
+
+  font-size: 7px;
+}
+
+.leyenda span {
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+}
+
+.punto {
+  display: inline-block;
+
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+}
+
+.punto.ingreso {
+  background: var(--verde-grafica);
+}
+
+.punto.gasto {
+  background: var(--rojo-grafica);
+}
+
+.grafica-scroll {
+  width: 100%;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.grafica {
+  position: relative;
+
+  width: 100%;
+  min-width: 520px;
+
+  height: 150px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 5px;
+
+  padding:
+    10px 8px
+    5px 38px;
+
+  margin-bottom: 26px;
+}
+
+.grafica-mensual {
+  min-width: 900px;
+}
+
+.linea-guia {
+  position: absolute;
+
+  left: 38px;
+  right: 8px;
+
+  height: 1px;
+
+  background: var(--linea);
+
+  pointer-events: none;
+}
+
+.linea-guia span {
+  position: absolute;
+
+  left: -31px;
+
+  transform: translateY(-50%);
+
+  color: #444444;
+
+  font-size: 7px;
+}
+
+.linea-superior {
+  top: 8px;
+}
+
+.linea-inferior {
+  bottom: 16px;
+}
+
+.grupo-barra {
+  position: relative;
+
+  z-index: 2;
+
+  flex: 1;
+
+  height: 100%;
+
+  min-width: 42px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 5px;
+}
+
+.contenedor-barras {
+  width: 100%;
+  height: calc(100% - 16px);
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  gap: 3px;
+}
+
+.barra {
+  width: 28px;
+  min-width: 7px;
+
+  border-radius: 4px 4px 0 0;
+
+  transition:
+    height 0.3s ease,
+    filter 0.15s ease;
+}
+
+.barra:hover {
+  filter: brightness(0.92);
+}
+
+.barra-ingreso {
+  background: var(--verde-grafica);
+}
+
+.barra-gasto {
+  width: 28px;
+
+  background: var(--rojo-grafica);
+}
+
+.etiqueta {
+  color: #2b302b;
+
+  font-size: 7px;
+  font-weight: 500;
+
+  white-space: nowrap;
+}
+
+.totales {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 26px;
+
+  width: 100%;
+
+  margin-top: 4px;
+}
+
+.total-card {
+  min-height: 50px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 1px;
+
+  background: var(--beige);
+
+  border-radius: 999px;
+
+  padding: 7px 12px;
+
+  text-align: center;
+}
+
+.total-card span {
+  color: var(--texto);
+
+  font-size: 14px;
+  font-weight: 700;
+
+  line-height: 1.1;
+}
+
+.total-card strong {
+  font-size: 14px;
+  font-weight: 700;
+
+  line-height: 1.2;
+}
+
+.positivo {
+  color: #4bea3f;
+}
+
+.negativo {
+  color: #ff1f1f;
+}
+
+.estado {
+  min-height: 220px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--texto);
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.estado.error {
+  color: var(--rojo-grafica);
+}
+
+@media (max-width: 650px) {
+  .estadisticas-overlay {
+    padding: 8px;
+  }
+
+  .estadisticas-modal {
+    width: 100%;
+
+    padding:
+      10px 12px
+      18px;
+
+    border-radius: 18px;
+  }
+
+  .modal-header {
+    min-height: 58px;
+  }
+
+  .periodos {
+    gap: 8px;
+
+    flex-wrap: wrap;
+  }
+
+  .periodos button {
+    width: 72px;
+  }
+
+  .tipos-datos {
+    gap: 8px;
+
+    flex-wrap: wrap;
+  }
+
+  .tipos-datos button {
+    min-width: 100px;
+
+    flex: 1;
+  }
+
+  .grafica {
+    min-width: 520px;
+  }
+
+  .grafica-mensual {
+    min-width: 900px;
+  }
+
+  .totales {
+    grid-template-columns: 1fr;
+
+    gap: 10px;
+  }
+
+  .total-card {
+    width: 100%;
+
+    max-width: 300px;
+
+    margin: 0 auto;
+  }
+}
