@@ -1,9 +1,9 @@
 import {
   Component,
   OnInit,
+  computed,
   inject,
-  signal,
-  computed
+  signal
 } from '@angular/core';
 
 import { Router } from '@angular/router';
@@ -19,14 +19,20 @@ import {
 } from '../../services/eventos.service';
 
 import {
+  EstadisticasService,
+  PuntoEstadistica,
+  ResultadoEstadisticas
+} from '../../services/estadisticas.service';
+
+import {
   Ingreso,
   SueldoFijoInput,
   IngresoExtraInput
 } from '../ingresos/models/ingreso.model';
 
-import { Gasto } from '../gastos/models/gasto.model';
-
-// ===================== INGRESOS =====================
+import {
+  Gasto
+} from '../gastos/models/gasto.model';
 
 import {
   SueldoFijoModal
@@ -53,8 +59,6 @@ import {
   IngresosTablaModal
 } from '../ingresos/components/ingresos-tabla-modal/ingresos-tabla-modal';
 
-// ===================== GASTOS =====================
-
 import {
   CrearGastoModal
 } from '../gastos/components/crear-gasto-modal/crear-gasto-modal';
@@ -71,24 +75,23 @@ import {
   GastosVistaLista
 } from '../gastos/components/gastos-vista-lista/gastos-vista-lista';
 
-// ===================== IMPUESTOS =====================
-
 import {
   ImpuestosModal
 } from '../impuestos/components/impuestos-modal/impuestos-modal';
 
-// ===================== EVENTOS =====================
-
 import {
   EventosModal
 } from '../eventos/components/eventos-modal/eventos-modal';
+
+import {
+  EstadisticasModal
+} from '../estadisticas/components/estadisticas-modal/estadisticas-modal';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
 
   imports: [
-    // INGRESOS
     SueldoFijoModal,
     IngresosMenuModal,
     IngresoExtraModal,
@@ -96,17 +99,14 @@ import {
     IngresosVistaLista,
     IngresosTablaModal,
 
-    // GASTOS
     CrearGastoModal,
     GastosTablaModal,
     GastoEditarModal,
     GastosVistaLista,
 
-    // IMPUESTOS
     ImpuestosModal,
-
-    // EVENTOS
-    EventosModal
+    EventosModal,
+    EstadisticasModal
   ],
 
   templateUrl: './dashboard.html',
@@ -126,32 +126,59 @@ export class Dashboard implements OnInit {
   private eventosService =
     inject(EventosService);
 
+  private estadisticasService =
+    inject(EstadisticasService);
+
   private router =
     inject(Router);
 
   user =
     this.authService.currentUser;
 
-  // =============================================
-  // INGRESOS
-  // =============================================
-
   ingresos =
     signal<Ingreso[]>([]);
 
+  gastos =
+    signal<Gasto[]>([]);
+
+  proximosEventos =
+    signal<Evento[]>([]);
+
+  estadisticasSemanales =
+    signal<ResultadoEstadisticas | null>(
+      null
+    );
+
   ultimosIngresos =
-    computed(() =>
-      this.ingresos().slice(0, 5)
+    computed(
+      () =>
+        this.ingresos()
+          .slice(0, 5)
+    );
+
+  ultimosGastos =
+    computed(
+      () =>
+        this.gastos()
+          .slice(0, 5)
+    );
+
+  eventosDashboard =
+    computed(
+      () =>
+        this.proximosEventos()
+          .slice(0, 5)
     );
 
   sueldoFijoTexto =
     computed(() => {
-
       const registro =
-        this.ingresos().find(
-          ingreso =>
-            ingreso.tipo === 'SUELDO_FIJO'
-        );
+        this.ingresos()
+          .find(
+            ingreso =>
+              ingreso.tipo ===
+              'SUELDO_FIJO'
+          );
 
       if (!registro) {
         return 'Q0.00';
@@ -160,6 +187,35 @@ export class Dashboard implements OnInit {
       return `Q${Number(
         registro.monto
       ).toFixed(2)}`;
+    });
+
+  datosGraficaSemanal =
+    computed<PuntoEstadistica[]>(
+      () =>
+        this.estadisticasSemanales()
+          ?.datos ?? []
+    );
+
+  maximoGraficaSemanal =
+    computed(() => {
+      const valores =
+        this.datosGraficaSemanal()
+          .flatMap(
+            punto => [
+              punto.ingresos,
+              punto.gastos
+            ]
+          );
+
+      const maximo =
+        Math.max(
+          ...valores,
+          0
+        );
+
+      return maximo > 0
+        ? maximo
+        : 1;
     });
 
   mostrarSueldoFijo =
@@ -171,34 +227,11 @@ export class Dashboard implements OnInit {
   mostrarIngresoExtra =
     signal(false);
 
-  tipoIngresoExtra =
-    signal<
-      'SUELDO_EXTRA' |
-      'SUELDO_VARIADO'
-    >(
-      'SUELDO_EXTRA'
-    );
-
   mostrarTablaCompleta =
     signal(false);
 
   mostrarEditarIngreso =
     signal(false);
-
-  idParaEditar =
-    signal<string | null>(null);
-
-  // =============================================
-  // GASTOS
-  // =============================================
-
-  gastos =
-    signal<Gasto[]>([]);
-
-  ultimosGastos =
-    computed(() =>
-      this.gastos().slice(0, 5)
-    );
 
   mostrarCrearGasto =
     signal(false);
@@ -209,63 +242,55 @@ export class Dashboard implements OnInit {
   mostrarEditarGasto =
     signal(false);
 
-  idGastoEditar =
-    signal<number | null>(null);
-
-  // =============================================
-  // IMPUESTOS
-  // =============================================
-
   mostrarImpuestos =
     signal(false);
 
-  // =============================================
-  // EVENTOS
-  // =============================================
-
-  proximosEventos =
-    signal<Evento[]>([]);
-
-  eventosDashboard =
-    computed(() =>
-      this.proximosEventos().slice(0, 5)
-    );
-
   mostrarEventos =
+    signal(false);
+
+  mostrarEstadisticas =
     signal(false);
 
   cargandoEventos =
     signal(false);
 
+  cargandoEstadisticas =
+    signal(false);
+
   errorEventos =
     signal<string | null>(null);
 
-  // =============================================
-  // LIFECYCLE
-  // =============================================
+  errorEstadisticas =
+    signal<string | null>(null);
+
+  idParaEditar =
+    signal<string | null>(null);
+
+  idGastoEditar =
+    signal<number | null>(null);
+
+  tipoIngresoExtra =
+    signal<
+      'SUELDO_EXTRA' |
+      'SUELDO_VARIADO'
+    >('SUELDO_EXTRA');
 
   ngOnInit(): void {
     this.cargarIngresos();
     this.cargarGastos();
     this.cargarProximosEventos();
+    this.cargarEstadisticasSemanales();
   }
 
-  // =============================================
-  // MÉTODOS: INGRESOS
-  // =============================================
-
   cargarIngresos(): void {
-
     this.ingresosService
       .listar()
       .subscribe({
-
         next: (
           res: {
             ingresos: Ingreso[]
           }
         ) => {
-
           this.ingresos.set(
             res.ingresos
           );
@@ -274,7 +299,6 @@ export class Dashboard implements OnInit {
         error: (
           err: HttpErrorResponse
         ) => {
-
           console.error(
             '[dashboard] Error al cargar ingresos:',
             err
@@ -284,30 +308,24 @@ export class Dashboard implements OnInit {
   }
 
   abrirSueldoFijo(): void {
-
-    this.mostrarSueldoFijo.set(
-      true
-    );
+    this.mostrarSueldoFijo
+      .set(true);
   }
 
   cerrarSueldoFijo(): void {
-
-    this.mostrarSueldoFijo.set(
-      false
-    );
+    this.mostrarSueldoFijo
+      .set(false);
   }
 
   guardarSueldoFijo(
     input: SueldoFijoInput
   ): void {
-
     this.ingresosService
       .crear(input)
       .subscribe({
-
         next: () => {
-
           this.cargarIngresos();
+          this.cargarEstadisticasSemanales();
 
           this.mostrarSueldoFijo
             .set(false);
@@ -316,7 +334,6 @@ export class Dashboard implements OnInit {
         error: (
           err: HttpErrorResponse
         ) => {
-
           console.error(
             '[dashboard] Error al guardar sueldo fijo:',
             err
@@ -326,54 +343,42 @@ export class Dashboard implements OnInit {
   }
 
   abrirIngresosMenu(): void {
-
-    this.mostrarIngresosMenu.set(
-      true
-    );
+    this.mostrarIngresosMenu
+      .set(true);
   }
 
   cerrarIngresosMenu(): void {
-
-    this.mostrarIngresosMenu.set(
-      false
-    );
+    this.mostrarIngresosMenu
+      .set(false);
   }
 
   onSeleccionarTipoExtra(
     opcion: OpcionIngresoMenu
   ): void {
+    this.tipoIngresoExtra
+      .set(opcion);
 
-    this.tipoIngresoExtra.set(
-      opcion
-    );
+    this.mostrarIngresosMenu
+      .set(false);
 
-    this.mostrarIngresosMenu.set(
-      false
-    );
-
-    this.mostrarIngresoExtra.set(
-      true
-    );
+    this.mostrarIngresoExtra
+      .set(true);
   }
 
   cerrarIngresoExtra(): void {
-
-    this.mostrarIngresoExtra.set(
-      false
-    );
+    this.mostrarIngresoExtra
+      .set(false);
   }
 
   guardarIngresoExtra(
     input: IngresoExtraInput
   ): void {
-
     this.ingresosService
       .crear(input)
       .subscribe({
-
         next: () => {
-
           this.cargarIngresos();
+          this.cargarEstadisticasSemanales();
 
           this.mostrarIngresoExtra
             .set(false);
@@ -382,7 +387,6 @@ export class Dashboard implements OnInit {
         error: (
           err: HttpErrorResponse
         ) => {
-
           console.error(
             '[dashboard] Error al guardar ingreso extra:',
             err
@@ -392,80 +396,65 @@ export class Dashboard implements OnInit {
   }
 
   abrirTablaCompleta(): void {
-
-    this.mostrarTablaCompleta.set(
-      true
-    );
+    this.mostrarTablaCompleta
+      .set(true);
   }
 
   cerrarTablaCompleta(): void {
-
-    this.mostrarTablaCompleta.set(
-      false
-    );
+    this.mostrarTablaCompleta
+      .set(false);
   }
 
   abrirEditarDesdeTabla(
     id: string
   ): void {
+    this.idParaEditar
+      .set(id);
 
-    this.idParaEditar.set(id);
+    this.mostrarTablaCompleta
+      .set(false);
 
-    this.mostrarTablaCompleta.set(
-      false
-    );
-
-    this.mostrarEditarIngreso.set(
-      true
-    );
+    this.mostrarEditarIngreso
+      .set(true);
   }
 
   abrirEditarManual(): void {
+    this.idParaEditar
+      .set(null);
 
-    this.idParaEditar.set(null);
-
-    this.mostrarEditarIngreso.set(
-      true
-    );
+    this.mostrarEditarIngreso
+      .set(true);
   }
 
   cerrarEditarIngreso(): void {
+    this.mostrarEditarIngreso
+      .set(false);
 
-    this.mostrarEditarIngreso.set(
-      false
-    );
-
-    this.idParaEditar.set(null);
+    this.idParaEditar
+      .set(null);
   }
 
   onIngresoActualizado(): void {
-
     this.cargarIngresos();
+    this.cargarEstadisticasSemanales();
     this.cerrarEditarIngreso();
   }
 
   onIngresoEliminado(): void {
-
     this.cargarIngresos();
+    this.cargarEstadisticasSemanales();
     this.cerrarEditarIngreso();
   }
 
-  // =============================================
-  // MÉTODOS: GASTOS
-  // =============================================
-
   cargarGastos(): void {
-
     this.gastosService
       .listar()
       .subscribe({
-
         next: (
           res: {
             gastos: Gasto[]
           }
         ) => {
-
           this.gastos.set(
             res.gastos
           );
@@ -474,7 +463,6 @@ export class Dashboard implements OnInit {
         error: (
           err: HttpErrorResponse
         ) => {
-
           console.error(
             '[dashboard] Error al cargar gastos:',
             err
@@ -484,23 +472,18 @@ export class Dashboard implements OnInit {
   }
 
   abrirCrearGasto(): void {
-
-    this.mostrarCrearGasto.set(
-      true
-    );
+    this.mostrarCrearGasto
+      .set(true);
   }
 
   cerrarCrearGasto(): void {
-
-    this.mostrarCrearGasto.set(
-      false
-    );
+    this.mostrarCrearGasto
+      .set(false);
   }
 
   guardarGasto(
     gasto: Gasto
   ): void {
-
     this.gastos.update(
       lista => [
         gasto,
@@ -508,53 +491,46 @@ export class Dashboard implements OnInit {
       ]
     );
 
-    this.mostrarCrearGasto.set(
-      false
-    );
+    this.mostrarCrearGasto
+      .set(false);
+
+    this.cargarEstadisticasSemanales();
   }
 
   abrirTablaGastos(): void {
-
-    this.mostrarTablaGastos.set(
-      true
-    );
+    this.mostrarTablaGastos
+      .set(true);
   }
 
   cerrarTablaGastos(): void {
-
-    this.mostrarTablaGastos.set(
-      false
-    );
+    this.mostrarTablaGastos
+      .set(false);
   }
 
   abrirEditarGastoDesdeTabla(
     id: number
   ): void {
+    this.idGastoEditar
+      .set(id);
 
-    this.idGastoEditar.set(id);
+    this.mostrarTablaGastos
+      .set(false);
 
-    this.mostrarTablaGastos.set(
-      false
-    );
-
-    this.mostrarEditarGasto.set(
-      true
-    );
+    this.mostrarEditarGasto
+      .set(true);
   }
 
   cerrarEditarGasto(): void {
+    this.mostrarEditarGasto
+      .set(false);
 
-    this.mostrarEditarGasto.set(
-      false
-    );
-
-    this.idGastoEditar.set(null);
+    this.idGastoEditar
+      .set(null);
   }
 
   onGastoActualizado(
     gasto: Gasto
   ): void {
-
     this.gastos.update(
       lista =>
         lista.map(
@@ -565,13 +541,13 @@ export class Dashboard implements OnInit {
         )
     );
 
+    this.cargarEstadisticasSemanales();
     this.cerrarEditarGasto();
   }
 
   onGastoEliminado(
     id: number
   ): void {
-
     this.gastos.update(
       lista =>
         lista.filter(
@@ -580,100 +556,80 @@ export class Dashboard implements OnInit {
         )
     );
 
+    this.cargarEstadisticasSemanales();
     this.cerrarEditarGasto();
   }
 
   eliminarGastoDesdeLista(
     id: number
   ): void {
-
     if (
-      confirm(
+      !confirm(
         '¿Estás seguro de que deseas eliminar este gasto?'
       )
     ) {
-
-      this.gastosService
-        .eliminar(id)
-        .subscribe({
-
-          next: () => {
-
-            this.gastos.update(
-              lista =>
-                lista.filter(
-                  gasto =>
-                    gasto.id !== id
-                )
-            );
-          },
-
-          error: (
-            err: HttpErrorResponse
-          ) => {
-
-            console.error(
-              '[dashboard] Error al eliminar gasto:',
-              err
-            );
-          }
-        });
+      return;
     }
-  }
 
-  // =============================================
-  // MÉTODOS: IMPUESTOS
-  // =============================================
-
-  abrirImpuestos(): void {
-
-    this.mostrarImpuestos.set(
-      true
-    );
-  }
-
-  cerrarImpuestos(): void {
-
-    this.mostrarImpuestos.set(
-      false
-    );
-  }
-
-  // =============================================
-  // MÉTODOS: EVENTOS
-  // =============================================
-
-  cargarProximosEventos(): void {
-
-    this.cargandoEventos.set(
-      true
-    );
-
-    this.errorEventos.set(
-      null
-    );
-
-    this.eventosService
-      .obtenerProximosEventos()
+    this.gastosService
+      .eliminar(id)
       .subscribe({
-
-        next: (
-          eventos: Evento[]
-        ) => {
-
-          this.proximosEventos.set(
-            eventos
+        next: () => {
+          this.gastos.update(
+            lista =>
+              lista.filter(
+                gasto =>
+                  gasto.id !== id
+              )
           );
 
-          this.cargandoEventos.set(
-            false
-          );
+          this.cargarEstadisticasSemanales();
         },
 
         error: (
           err: HttpErrorResponse
         ) => {
+          console.error(
+            '[dashboard] Error al eliminar gasto:',
+            err
+          );
+        }
+      });
+  }
 
+  abrirImpuestos(): void {
+    this.mostrarImpuestos
+      .set(true);
+  }
+
+  cerrarImpuestos(): void {
+    this.mostrarImpuestos
+      .set(false);
+  }
+
+  cargarProximosEventos(): void {
+    this.cargandoEventos
+      .set(true);
+
+    this.errorEventos
+      .set(null);
+
+    this.eventosService
+      .obtenerProximosEventos()
+      .subscribe({
+        next: (
+          eventos: Evento[]
+        ) => {
+          this.proximosEventos
+            .set(eventos);
+
+          this.cargandoEventos
+            .set(false);
+        },
+
+        error: (
+          err: HttpErrorResponse
+        ) => {
           console.error(
             '[dashboard] Error al cargar próximos eventos:',
             err
@@ -683,51 +639,138 @@ export class Dashboard implements OnInit {
             'No se pudieron cargar los próximos eventos'
           );
 
-          this.cargandoEventos.set(
-            false
-          );
+          this.cargandoEventos
+            .set(false);
         }
       });
   }
 
   abrirEventos(): void {
-
-    this.mostrarEventos.set(
-      true
-    );
+    this.mostrarEventos
+      .set(true);
   }
 
   cerrarEventos(): void {
-
-    this.mostrarEventos.set(
-      false
-    );
+    this.mostrarEventos
+      .set(false);
   }
 
   actualizarEventos(): void {
-
     this.cargarProximosEventos();
   }
 
-  // =============================================
-  // LOGOUT
-  // =============================================
+  cargarEstadisticasSemanales(): void {
+    this.cargandoEstadisticas
+      .set(true);
+
+    this.errorEstadisticas
+      .set(null);
+
+    this.estadisticasService
+      .obtener(
+        'semanal',
+        this.obtenerFechaLocal()
+      )
+      .subscribe({
+        next: (
+          resultado:
+            ResultadoEstadisticas
+        ) => {
+          this.estadisticasSemanales
+            .set(resultado);
+
+          this.cargandoEstadisticas
+            .set(false);
+        },
+
+        error: (
+          err: HttpErrorResponse
+        ) => {
+          console.error(
+            '[dashboard] Error al cargar estadísticas:',
+            err
+          );
+
+          this.errorEstadisticas
+            .set(
+              'No se pudo cargar la gráfica'
+            );
+
+          this.cargandoEstadisticas
+            .set(false);
+        }
+      });
+  }
+
+  alturaGrafica(
+    valor: number
+  ): number {
+    if (valor <= 0) {
+      return 0;
+    }
+
+    return Math.max(
+      (
+        valor /
+        this.maximoGraficaSemanal()
+      ) * 100,
+      4
+    );
+  }
+
+  abrirEstadisticas(): void {
+    this.mostrarEstadisticas
+      .set(true);
+  }
+
+  cerrarEstadisticas(): void {
+    this.mostrarEstadisticas
+      .set(false);
+  }
+
+  formatearMonedaGrafica(
+    valor: number
+  ): string {
+    return new Intl.NumberFormat(
+      'es-GT',
+      {
+        style: 'currency',
+        currency: 'GTQ',
+        minimumFractionDigits: 2
+      }
+    ).format(valor);
+  }
+
+  private obtenerFechaLocal(): string {
+    const fecha = new Date();
+
+    const anio =
+      fecha.getFullYear();
+
+    const mes =
+      String(
+        fecha.getMonth() + 1
+      ).padStart(2, '0');
+
+    const dia =
+      String(
+        fecha.getDate()
+      ).padStart(2, '0');
+
+    return `${anio}-${mes}-${dia}`;
+  }
 
   onLogout(): void {
-
     this.authService
       .logout()
       .subscribe({
-
         next: () => {
-
           this.router.navigateByUrl(
             '/login'
           );
         },
 
         error: () => {
-
           this.router.navigateByUrl(
             '/login'
           );

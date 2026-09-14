@@ -1,19 +1,17 @@
 <div class="dashboard-wrapper">
 
-  <!-- ===================== HEADER ===================== -->
-
   <header class="topbar">
 
     <div class="brand">
+
       <img
         class="brand-logo"
         src="/images/Fluw.png"
         alt="fluw">
+
     </div>
 
     <nav class="topbar-nav">
-
-      <!-- Sueldo Fijo -->
 
       <button
         class="pill pill-static"
@@ -22,15 +20,14 @@
 
         <span class="pill-static-line">
           Sueldo Fijo&nbsp;
+
           <strong>
             {{ sueldoFijoTexto() }}
           </strong>
+
         </span>
 
       </button>
-
-
-      <!-- Ingresos -->
 
       <button
         class="pill pill-link"
@@ -58,9 +55,6 @@
 
       </button>
 
-
-      <!-- Gastos -->
-
       <button
         class="pill pill-link"
         type="button"
@@ -86,9 +80,6 @@
         </span>
 
       </button>
-
-
-      <!-- Impuestos -->
 
       <button
         class="pill pill-link"
@@ -117,7 +108,6 @@
       </button>
 
     </nav>
-
 
     <div class="topbar-user">
 
@@ -148,7 +138,6 @@
 
       </button>
 
-
       <button
         class="icon-btn icon-btn-logout"
         type="button"
@@ -166,17 +155,12 @@
 
   </header>
 
-
-  <!-- ===================== GRID PRINCIPAL ===================== -->
-
   <main class="grid">
-
-
-    <!-- ===================== INGRESOS ===================== -->
 
     <section class="card income-card">
 
-      <div class="card-header dark income-header">
+      <div
+        class="card-header dark income-header">
 
         <h2>
           Ingresos vista
@@ -204,12 +188,20 @@
 
     </section>
 
+    <section
+      class="card card-graph card-graph-clickable"
+      role="button"
+      tabindex="0"
+      aria-label="Abrir estadísticas financieras"
+      (click)="abrirEstadisticas()"
+      (keydown.enter)="abrirEstadisticas()"
+      (keydown.space)="
+        abrirEstadisticas();
+        $event.preventDefault()
+      ">
 
-    <!-- ===================== GRAFICA ===================== -->
-
-    <section class="card card-graph">
-
-      <div class="card-header dark centered">
+      <div
+        class="card-header dark centered">
 
         <h2>
           Grafica
@@ -217,212 +209,120 @@
 
       </div>
 
+      @if (cargandoEstadisticas()) {
 
-      <div class="graph-body">
+        <div class="graph-state">
+          Cargando gráfica...
+        </div>
 
-        <div class="graph-legend">
+      } @else if (errorEstadisticas()) {
 
-          <span class="legend-item">
-            <i class="dot dot-green"></i>
-            Ingreso
-          </span>
+        <div
+          class="graph-state graph-error">
 
-          <span class="legend-item">
-            <i class="dot dot-red"></i>
-            Gasto
-          </span>
+          {{ errorEstadisticas() }}
 
         </div>
 
+      } @else {
 
-        <div class="graph-chart">
+        <div class="graph-body">
 
-          <div class="graph-axis">
-            2.000
-          </div>
+          <div class="graph-legend">
 
+            <span class="legend-item">
 
-          <div class="bars">
+              <i
+                class="dot dot-green">
+              </i>
 
-            <div class="bar-group">
+              Ingresos
 
-              <div class="bar-pair">
+            </span>
 
-                <div
-                  class="bar bar-green"
-                  style="height: 78%">
-                </div>
+            <span class="legend-item">
 
-                <div
-                  class="bar bar-red"
-                  style="height: 8%">
-                </div>
+              <i
+                class="dot dot-red">
+              </i>
 
-              </div>
+              Gastos
 
-              <span class="bar-day">
-                Lunes
-              </span>
-
-            </div>
-
-
-            <div class="bar-group">
-
-              <div class="bar-pair">
-
-                <div
-                  class="bar bar-green"
-                  style="height: 85%">
-                </div>
-
-                <div
-                  class="bar bar-red"
-                  style="height: 6%">
-                </div>
-
-              </div>
-
-              <span class="bar-day">
-                Martes
-              </span>
-
-            </div>
-
-
-            <div class="bar-group">
-
-              <div class="bar-pair">
-
-                <div
-                  class="bar bar-green"
-                  style="height: 55%">
-                </div>
-
-                <div
-                  class="bar bar-red"
-                  style="height: 8%">
-                </div>
-
-              </div>
-
-              <span class="bar-day">
-                Miercoles
-              </span>
-
-            </div>
-
-
-            <div class="bar-group">
-
-              <div class="bar-pair">
-
-                <div
-                  class="bar bar-green"
-                  style="height: 60%">
-                </div>
-
-                <div
-                  class="bar bar-red"
-                  style="height: 6%">
-                </div>
-
-              </div>
-
-              <span class="bar-day">
-                Jueves
-              </span>
-
-            </div>
-
-
-            <div class="bar-group">
-
-              <div class="bar-pair">
-
-                <div
-                  class="bar bar-green"
-                  style="height: 100%">
-                </div>
-
-                <div
-                  class="bar bar-red"
-                  style="height: 6%">
-                </div>
-
-              </div>
-
-              <span class="bar-day">
-                Viernes
-              </span>
-
-            </div>
-
-
-            <div class="bar-group">
-
-              <div class="bar-pair">
-
-                <div
-                  class="bar bar-green"
-                  style="height: 25%">
-                </div>
-
-                <div
-                  class="bar bar-red"
-                  style="height: 6%">
-                </div>
-
-              </div>
-
-              <span class="bar-day">
-                Sabado
-              </span>
-
-            </div>
-
-
-            <div class="bar-group">
-
-              <div class="bar-pair">
-
-                <div
-                  class="bar bar-green"
-                  style="height: 0%">
-                </div>
-
-                <div
-                  class="bar bar-red"
-                  style="height: 6%">
-                </div>
-
-              </div>
-
-              <span class="bar-day">
-                Domingo
-              </span>
-
-            </div>
+            </span>
 
           </div>
 
+          <div class="graph-chart">
 
-          <div class="graph-baseline">
-            0
+            <div class="bars">
+
+              @for (
+                punto of datosGraficaSemanal();
+                track punto.etiqueta
+              ) {
+
+                <div class="bar-group">
+
+                  <div class="bar-pair">
+
+                    <div
+                      class="bar bar-green"
+                      [style.height.%]="
+                        alturaGrafica(
+                          punto.ingresos
+                        )
+                      "
+                      [title]="
+                        'Ingresos: ' +
+                        formatearMonedaGrafica(
+                          punto.ingresos
+                        )
+                      ">
+                    </div>
+
+                    <div
+                      class="bar bar-red"
+                      [style.height.%]="
+                        alturaGrafica(
+                          punto.gastos
+                        )
+                      "
+                      [title]="
+                        'Gastos: ' +
+                        formatearMonedaGrafica(
+                          punto.gastos
+                        )
+                      ">
+                    </div>
+
+                  </div>
+
+                  <span class="bar-day">
+                    {{ punto.etiqueta }}
+                  </span>
+
+                </div>
+
+              }
+
+            </div>
+
+            <div class="graph-baseline">
+              0
+            </div>
+
           </div>
 
         </div>
 
-      </div>
+      }
 
     </section>
 
-
-    <!-- ===================== GASTOS ===================== -->
-
     <section class="card expense-card">
 
-      <div class="card-header dark expense-header">
+      <div
+        class="card-header dark expense-header">
 
         <h2>
           Gastos vista
@@ -443,20 +343,20 @@
 
       </div>
 
-
       <app-gastos-vista-lista
         [gastos]="ultimosGastos()"
-        (eliminado)="eliminarGastoDesdeLista($event)">
+        (eliminado)="
+          eliminarGastoDesdeLista($event)
+        ">
       </app-gastos-vista-lista>
 
     </section>
 
+    <section
+      class="card stat-card stat-tight">
 
-    <!-- ===================== AHORRO ===================== -->
-
-    <section class="card stat-card stat-tight">
-
-      <div class="card-header dark centered small">
+      <div
+        class="card-header dark centered small">
 
         <h2>
           Total de ahorro
@@ -466,7 +366,8 @@
 
       <div class="stat-body">
 
-        <span class="stat-value stat-green">
+        <span
+          class="stat-value stat-green">
           Q500.00
         </span>
 
@@ -474,12 +375,11 @@
 
     </section>
 
+    <section
+      class="card stat-card stat-tight">
 
-    <!-- ===================== IMPUESTOS A PAGAR ===================== -->
-
-    <section class="card stat-card stat-tight">
-
-      <div class="card-header dark centered small">
+      <div
+        class="card-header dark centered small">
 
         <h2>
           Impuestos a pagar
@@ -489,7 +389,8 @@
 
       <div class="stat-body">
 
-        <span class="stat-value stat-neutral">
+        <span
+          class="stat-value stat-neutral">
           Q1050.00
         </span>
 
@@ -497,19 +398,16 @@
 
     </section>
 
-
-    <!-- ===================== EVENTOS ===================== -->
-
     <section class="card events-card">
 
-      <div class="card-header dark centered small">
+      <div
+        class="card-header dark centered small">
 
         <h2>
           Próximos eventos
         </h2>
 
       </div>
-
 
       @if (cargandoEventos()) {
 
@@ -519,11 +417,16 @@
 
       } @else if (errorEventos()) {
 
-        <div class="events-state events-error">
+        <div
+          class="events-state events-error">
+
           {{ errorEventos() }}
+
         </div>
 
-      } @else if (eventosDashboard().length === 0) {
+      } @else if (
+        eventosDashboard().length === 0
+      ) {
 
         <div class="events-state">
           No hay próximos eventos
@@ -566,19 +469,24 @@
 
     </section>
 
-
-    <!-- ===================== CALENDARIO ===================== -->
-
     <section
-      class="card calendar-card calendar-clickable"
+      class="
+        card
+        calendar-card
+        calendar-clickable
+      "
       role="button"
       tabindex="0"
       aria-label="Abrir calendario de eventos"
       (click)="abrirEventos()"
       (keydown.enter)="abrirEventos()"
-      (keydown.space)="abrirEventos(); $event.preventDefault()">
+      (keydown.space)="
+        abrirEventos();
+        $event.preventDefault()
+      ">
 
-      <div class="card-header dark centered small">
+      <div
+        class="card-header dark centered small">
 
         <h2>
           Calendario
@@ -599,12 +507,10 @@
 
     </section>
 
-
-    <!-- ===================== FONDO EMERGENCIA ===================== -->
-
     <section class="card stat-card">
 
-      <div class="card-header dark centered small">
+      <div
+        class="card-header dark centered small">
 
         <h2>
           Fondo de emergencia
@@ -614,7 +520,8 @@
 
       <div class="stat-body">
 
-        <span class="stat-value stat-neutral">
+        <span
+          class="stat-value stat-neutral">
           Q10,000.00
         </span>
 
@@ -622,12 +529,10 @@
 
     </section>
 
-
-    <!-- ===================== GASTO PLANEADO ===================== -->
-
     <section class="card stat-card">
 
-      <div class="card-header dark centered small">
+      <div
+        class="card-header dark centered small">
 
         <h2>
           Total de Gasto planeado
@@ -637,7 +542,8 @@
 
       <div class="stat-body">
 
-        <span class="stat-value stat-red">
+        <span
+          class="stat-value stat-red">
           Q10,000.00
         </span>
 
@@ -647,70 +553,66 @@
 
   </main>
 
-
-  <!-- =====================================================
-       MODALES DE INGRESOS
-       ===================================================== -->
-
-
   @if (mostrarSueldoFijo()) {
 
     <app-sueldo-fijo-modal
       (cerrar)="cerrarSueldoFijo()"
-      (guardar)="guardarSueldoFijo($event)">
+      (guardar)="
+        guardarSueldoFijo($event)
+      ">
     </app-sueldo-fijo-modal>
 
   }
-
 
   @if (mostrarIngresosMenu()) {
 
     <app-ingresos-menu-modal
       (cerrar)="cerrarIngresosMenu()"
-      (seleccionar)="onSeleccionarTipoExtra($event)">
+      (seleccionar)="
+        onSeleccionarTipoExtra($event)
+      ">
     </app-ingresos-menu-modal>
 
   }
-
 
   @if (mostrarIngresoExtra()) {
 
     <app-ingreso-extra-modal
       [tipo]="tipoIngresoExtra()"
       (cerrar)="cerrarIngresoExtra()"
-      (guardar)="guardarIngresoExtra($event)">
+      (guardar)="
+        guardarIngresoExtra($event)
+      ">
     </app-ingreso-extra-modal>
 
   }
-
 
   @if (mostrarTablaCompleta()) {
 
     <app-ingresos-tabla-modal
       [ingresos]="ingresos()"
       (cerrar)="cerrarTablaCompleta()"
-      (editar)="abrirEditarDesdeTabla($event)">
+      (editar)="
+        abrirEditarDesdeTabla($event)
+      ">
     </app-ingresos-tabla-modal>
 
   }
-
 
   @if (mostrarEditarIngreso()) {
 
     <app-ingreso-editar-modal
       [ingresoId]="idParaEditar()"
       (cerrar)="cerrarEditarIngreso()"
-      (actualizado)="onIngresoActualizado()"
-      (eliminado)="onIngresoEliminado()">
+      (actualizado)="
+        onIngresoActualizado()
+      "
+      (eliminado)="
+        onIngresoEliminado()
+      ">
     </app-ingreso-editar-modal>
 
   }
-
-
-  <!-- =====================================================
-       MODALES DE GASTOS
-       ===================================================== -->
-
 
   @if (mostrarCrearGasto()) {
 
@@ -721,34 +623,34 @@
 
   }
 
-
   @if (mostrarTablaGastos()) {
 
     <app-gastos-tabla-modal
       [gastos]="gastos()"
       (cerrar)="cerrarTablaGastos()"
-      (editar)="abrirEditarGastoDesdeTabla($event)">
+      (editar)="
+        abrirEditarGastoDesdeTabla(
+          $event
+        )
+      ">
     </app-gastos-tabla-modal>
 
   }
-
 
   @if (mostrarEditarGasto()) {
 
     <app-gasto-editar-modal
       [gastoId]="idGastoEditar()!"
       (cerrar)="cerrarEditarGasto()"
-      (actualizado)="onGastoActualizado($event)"
-      (eliminado)="onGastoEliminado($event)">
+      (actualizado)="
+        onGastoActualizado($event)
+      "
+      (eliminado)="
+        onGastoEliminado($event)
+      ">
     </app-gasto-editar-modal>
 
   }
-
-
-  <!-- =====================================================
-       MODAL DE IMPUESTOS
-       ===================================================== -->
-
 
   @if (mostrarImpuestos()) {
 
@@ -758,19 +660,23 @@
 
   }
 
-
-  <!-- =====================================================
-       MODAL DE EVENTOS
-       ===================================================== -->
-
-
   @if (mostrarEventos()) {
 
     <app-eventos-modal
       [visible]="mostrarEventos()"
       (cerrar)="cerrarEventos()"
-      (eventosActualizados)="actualizarEventos()">
+      (eventosActualizados)="
+        actualizarEventos()
+      ">
     </app-eventos-modal>
+
+  }
+
+  @if (mostrarEstadisticas()) {
+
+    <app-estadisticas-modal
+      (cerrar)="cerrarEstadisticas()">
+    </app-estadisticas-modal>
 
   }
 

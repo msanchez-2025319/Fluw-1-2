@@ -8,6 +8,7 @@ import ingresosRoutes from "./modules/ingresos/ingresos.routes.js";
 import gastosRoutes from "./modules/gastos/gastos.routes.js";
 import impuestosRoutes from "./modules/impuestos/impuestos.routes.js";
 import eventosRoutes from "./modules/eventos/eventos.routes.js";
+import estadisticasRoutes from "./modules/estadisticas/estadisticas.routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +28,7 @@ app.use("/api/ingresos", ingresosRoutes);
 app.use("/api/gastos", gastosRoutes);
 app.use("/api/impuestos", impuestosRoutes);
 app.use("/api/eventos", eventosRoutes);
+app.use("/api/estadisticas", estadisticasRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
