@@ -1,0 +1,353 @@
+<div
+  class="modal-backdrop"
+  *ngIf="visible"
+>
+  <section class="eventos-panel">
+
+    <header class="eventos-header">
+      <div>
+        <span class="eyebrow">
+          Organización
+        </span>
+
+        <h2>
+          Próximos eventos
+        </h2>
+
+        <p>
+          Administra tus fechas importantes
+          y mantén tu calendario actualizado.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn-cerrar"
+        (click)="cerrarModal()"
+        aria-label="Cerrar"
+        title="Cerrar"
+      >
+        <img
+          src="/images/cancel.png"
+          alt="Cerrar"
+          class="btn-cerrar-img"
+        >
+      </button>
+    </header>
+
+    <div class="eventos-contenido">
+
+      <!-- ========================= -->
+      <!-- CALENDARIO -->
+      <!-- ========================= -->
+
+      <section class="calendario-card">
+
+        <div class="calendario-header">
+
+          <button
+            type="button"
+            class="btn-mes"
+            (click)="mesAnterior()"
+            aria-label="Mes anterior"
+          >
+            ‹
+          </button>
+
+          <h3>
+            {{ nombreMes() }}
+          </h3>
+
+          <button
+            type="button"
+            class="btn-mes"
+            (click)="mesSiguiente()"
+            aria-label="Mes siguiente"
+          >
+            ›
+          </button>
+
+        </div>
+
+        <div class="dias-semana">
+          <span>Dom</span>
+          <span>Lun</span>
+          <span>Mar</span>
+          <span>Mié</span>
+          <span>Jue</span>
+          <span>Vie</span>
+          <span>Sáb</span>
+        </div>
+
+        <div class="calendario-grid">
+
+          <button
+            type="button"
+            class="dia"
+            *ngFor="let dia of diasCalendario()"
+            [class.vacio]="!dia.numero"
+            [class.con-evento]="dia.tieneEvento"
+            [class.seleccionado]="
+              dia.fecha === fechaSeleccionada()
+            "
+            [disabled]="!dia.fecha"
+            (click)="seleccionarFecha(dia.fecha)"
+          >
+
+            <span>
+              {{ dia.numero }}
+            </span>
+
+            <span
+              class="punto-evento"
+              *ngIf="dia.tieneEvento"
+            ></span>
+
+          </button>
+
+        </div>
+
+      </section>
+
+      <!-- ========================= -->
+      <!-- FORMULARIO -->
+      <!-- ========================= -->
+
+      <section class="formulario-card">
+
+        <div class="formulario-titulo">
+          <div>
+
+            <span class="eyebrow">
+              {{
+                modoEdicion()
+                  ? 'Editar'
+                  : 'Nuevo'
+              }}
+            </span>
+
+            <h3>
+              {{
+                modoEdicion()
+                  ? 'Editar evento'
+                  : 'Agregar próximo evento'
+              }}
+            </h3>
+
+          </div>
+        </div>
+
+        <form
+          (ngSubmit)="guardarEvento()"
+        >
+
+          <div class="campo">
+
+            <label for="fechaEvento">
+              Fecha
+            </label>
+
+            <input
+              id="fechaEvento"
+              name="fechaEvento"
+              type="date"
+              [(ngModel)]="fecha"
+              required
+            >
+
+          </div>
+
+          <div class="campo">
+
+            <label for="descripcionEvento">
+              Descripción
+            </label>
+
+            <textarea
+              id="descripcionEvento"
+              name="descripcionEvento"
+              rows="4"
+              maxlength="180"
+              placeholder="Ej. Pago de internet"
+              [(ngModel)]="descripcion"
+              required
+            ></textarea>
+
+          </div>
+
+          <div
+            class="mensaje-error"
+            *ngIf="error()"
+          >
+            {{ error() }}
+          </div>
+
+          <div class="acciones-formulario">
+
+            <button
+              type="button"
+              class="btn-secundario"
+              *ngIf="modoEdicion()"
+              (click)="cancelarEdicion()"
+              [disabled]="guardando()"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              class="btn-principal"
+              [disabled]="guardando()"
+            >
+              {{
+                guardando()
+                  ? 'Guardando...'
+                  : 'Guardar'
+              }}
+            </button>
+
+          </div>
+
+        </form>
+
+      </section>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- LISTA -->
+    <!-- ========================= -->
+
+    <section class="lista-card">
+
+      <div class="lista-header">
+
+        <div>
+
+          <span class="eyebrow">
+            Agenda
+          </span>
+
+          <h3>
+            Eventos guardados
+          </h3>
+
+        </div>
+
+        <span class="contador">
+          {{ eventos().length }}
+        </span>
+
+      </div>
+
+      <div
+        class="estado"
+        *ngIf="cargando()"
+      >
+        Cargando eventos...
+      </div>
+
+      <div
+        class="estado"
+        *ngIf="
+          !cargando() &&
+          eventos().length === 0
+        "
+      >
+        No hay eventos guardados.
+      </div>
+
+      <div
+        class="eventos-lista"
+        *ngIf="
+          !cargando() &&
+          eventos().length > 0
+        "
+      >
+
+        <article
+          class="evento-item"
+          *ngFor="let evento of eventos()"
+        >
+
+          <div class="evento-fecha">
+
+            <span class="fecha-dia">
+              {{
+                formatearFecha(
+                  evento.fecha
+                ).split('/')[0]
+              }}/
+            </span>
+
+            <span class="fecha-resto">
+              {{
+                formatearFecha(
+                  evento.fecha
+                ).split('/')[1]
+              }}/
+              {{
+                formatearFecha(
+                  evento.fecha
+                ).split('/')[2]
+              }}
+            </span>
+
+          </div>
+
+          <div class="evento-info">
+
+            <strong>
+              {{ evento.descripcion }}
+            </strong>
+
+            <span>
+              {{
+                formatearFecha(
+                  evento.fecha
+                )
+              }}
+            </span>
+
+          </div>
+
+          <div class="evento-acciones">
+
+            <button
+              type="button"
+              class="btn-icono editar"
+              (click)="editarEvento(evento)"
+              aria-label="Editar evento"
+              title="Editar evento"
+            >
+              <img
+                src="/images/editar.png"
+                alt="Editar"
+                class="btn-icono-img"
+              >
+            </button>
+
+            <button
+              type="button"
+              class="btn-icono eliminar"
+              (click)="eliminarEvento(evento)"
+              aria-label="Eliminar evento"
+              title="Eliminar evento"
+            >
+              <img
+                src="/images/cancel.png"
+                alt="Eliminar"
+                class="btn-icono-img"
+              >
+            </button>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+  </section>
+</div>

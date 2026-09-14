@@ -17,6 +17,7 @@ model User {
   refreshTokens RefreshToken[]
   ingresos      Ingreso[]
   gastos        Gasto[]
+  eventos       Evento[]
 
   @@map("users")
 }
@@ -49,6 +50,34 @@ model Ingreso {
   updatedAt     DateTime          @updatedAt
 
   @@map("ingresos")
+}
+
+model Gasto {
+  id          Int            @id @default(autoincrement())
+  fecha       DateTime
+  descripcion String
+  monto       Decimal        @db.Decimal(10, 2)
+  formaPago   FormaPago
+  estado      EstadoGasto
+  categoria   CategoriaGasto
+  userId      String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@map("gastos")
+}
+
+model Evento {
+  id          String   @id @default(uuid())
+  fecha       DateTime
+  descripcion String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("eventos")
 }
 
 enum Role {
@@ -91,25 +120,6 @@ enum CuentaDestino {
   CUENTAS_BANCARIAS
   OTROS
 }
-
-//GASTOS
-
-model Gasto {
-  id            Int           @id @default(autoincrement())
-  fecha         DateTime
-  descripcion   String
-  monto         Decimal       @db.Decimal(10, 2)
-  formaPago     FormaPago
-  estado        EstadoGasto
-  categoria     CategoriaGasto
-  userId        String
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-
-  @@map("gastos")
-}
-
 
 enum FormaPago {
   EFECTIVO
