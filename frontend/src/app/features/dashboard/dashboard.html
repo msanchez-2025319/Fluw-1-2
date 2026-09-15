@@ -232,9 +232,7 @@
 
             <span class="legend-item">
 
-              <i
-                class="dot dot-green">
-              </i>
+              <i class="dot dot-green"></i>
 
               Ingresos
 
@@ -242,9 +240,7 @@
 
             <span class="legend-item">
 
-              <i
-                class="dot dot-red">
-              </i>
+              <i class="dot dot-red"></i>
 
               Gastos
 
@@ -352,8 +348,24 @@
 
     </section>
 
+    <!-- AHORROS -->
+
     <section
-      class="card stat-card stat-tight">
+      class="
+        card
+        stat-card
+        stat-tight
+        ahorro-card-clickable
+      "
+      role="button"
+      tabindex="0"
+      aria-label="Abrir meta de ahorro"
+      (click)="abrirAhorro()"
+      (keydown.enter)="abrirAhorro()"
+      (keydown.space)="
+        abrirAhorro();
+        $event.preventDefault()
+      ">
 
       <div
         class="card-header dark centered small">
@@ -364,12 +376,28 @@
 
       </div>
 
-      <div class="stat-body">
+      <div
+        class="stat-body ahorro-stat-body">
 
         <span
           class="stat-value stat-green">
-          Q500.00
+
+          {{ ahorroActualTexto() }}
+
         </span>
+
+        <div
+          class="ahorro-progress"
+          aria-label="Progreso de ahorro">
+
+          <div
+            class="ahorro-progress-fill"
+            [style.width.%]="
+              porcentajeAhorro()
+            ">
+          </div>
+
+        </div>
 
       </div>
 
@@ -677,6 +705,17 @@
     <app-estadisticas-modal
       (cerrar)="cerrarEstadisticas()">
     </app-estadisticas-modal>
+
+  }
+
+  @if (mostrarAhorro()) {
+
+    <app-ahorro-modal
+      (cerrar)="cerrarAhorro()"
+      (ahorroActualizado)="
+        onAhorroActualizado($event)
+      ">
+    </app-ahorro-modal>
 
   }
 
