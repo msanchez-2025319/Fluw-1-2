@@ -8,17 +8,18 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
-  password      String
-  role          Role           @default(USER)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  refreshTokens RefreshToken[]
-  ingresos      Ingreso[]
-  gastos        Gasto[]
-  eventos       Evento[]
-  ahorro        Ahorro?
+  id                  String               @id @default(uuid())
+  email               String               @unique
+  password            String
+  role                Role                 @default(USER)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  refreshTokens       RefreshToken[]
+  ingresos            Ingreso[]
+  gastos              Gasto[]
+  eventos             Evento[]
+  ahorro              Ahorro?
+  presupuestoImpuesto PresupuestoImpuesto?
 
   @@map("users")
 }
@@ -93,6 +94,17 @@ model Ahorro {
   updatedAt    DateTime  @updatedAt
 
   @@map("ahorros")
+}
+
+model PresupuestoImpuesto {
+  id        String   @id @default(uuid())
+  monto     Decimal  @db.Decimal(12, 2)
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("presupuestos_impuestos")
 }
 
 enum Role {

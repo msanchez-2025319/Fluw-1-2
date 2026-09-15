@@ -15,6 +15,11 @@ import { GastosService } from '../../services/gastos.service';
 import { AhorrosService } from '../../services/ahorros.service';
 
 import {
+  ImpuestosService,
+  ResumenImpuestos
+} from '../../services/impuestos.service';
+
+import {
   EventosService,
   Evento
 } from '../../services/eventos.service';
@@ -85,6 +90,10 @@ import {
 } from '../impuestos/components/impuestos-modal/impuestos-modal';
 
 import {
+  PresupuestoImpuestoModal
+} from '../impuestos/components/presupuesto-impuesto-modal/presupuesto-impuesto-modal';
+
+import {
   EventosModal
 } from '../eventos/components/eventos-modal/eventos-modal';
 
@@ -114,6 +123,8 @@ import {
     GastosVistaLista,
 
     ImpuestosModal,
+    PresupuestoImpuestoModal,
+
     EventosModal,
     EstadisticasModal,
     AhorroModal
@@ -136,6 +147,9 @@ export class Dashboard implements OnInit {
   private ahorrosService =
     inject(AhorrosService);
 
+  private impuestosService =
+    inject(ImpuestosService);
+
   private eventosService =
     inject(EventosService);
 
@@ -156,6 +170,9 @@ export class Dashboard implements OnInit {
 
   ahorro =
     signal<Ahorro | null>(null);
+
+  resumenImpuestos =
+    signal<ResumenImpuestos | null>(null);
 
   proximosEventos =
     signal<Evento[]>([]);
@@ -248,6 +265,29 @@ export class Dashboard implements OnInit {
       );
     });
 
+  totalImpuestos =
+    computed(() =>
+      Number(
+        this.resumenImpuestos()
+          ?.totalImpuestos ?? 0
+      )
+    );
+
+  totalImpuestosTexto =
+    computed(() => {
+
+      return new Intl.NumberFormat(
+        'es-GT',
+        {
+          style: 'currency',
+          currency: 'GTQ',
+          minimumFractionDigits: 2
+        }
+      ).format(
+        this.totalImpuestos()
+      );
+    });
+
   datosGraficaSemanal =
     computed<PuntoEstadistica[]>(
       () =>
@@ -305,6 +345,9 @@ export class Dashboard implements OnInit {
   mostrarImpuestos =
     signal(false);
 
+  mostrarPresupuestoImpuestos =
+    signal(false);
+
   mostrarEventos =
     signal(false);
 
@@ -349,6 +392,8 @@ export class Dashboard implements OnInit {
     this.cargarEstadisticasSemanales();
 
     this.cargarAhorro();
+
+    this.cargarTotalImpuestos();
   }
 
   // =========================
@@ -462,6 +507,8 @@ export class Dashboard implements OnInit {
 
           this.cargarEstadisticasSemanales();
 
+          this.cargarTotalImpuestos();
+
           this.mostrarSueldoFijo
             .set(false);
         },
@@ -523,6 +570,8 @@ export class Dashboard implements OnInit {
           this.cargarIngresos();
 
           this.cargarEstadisticasSemanales();
+
+          this.cargarTotalImpuestos();
 
           this.mostrarIngresoExtra
             .set(false);
@@ -590,6 +639,8 @@ export class Dashboard implements OnInit {
 
     this.cargarEstadisticasSemanales();
 
+    this.cargarTotalImpuestos();
+
     this.cerrarEditarIngreso();
   }
 
@@ -598,6 +649,8 @@ export class Dashboard implements OnInit {
     this.cargarIngresos();
 
     this.cargarEstadisticasSemanales();
+
+    this.cargarTotalImpuestos();
 
     this.cerrarEditarIngreso();
   }
@@ -780,6 +833,53 @@ export class Dashboard implements OnInit {
   // IMPUESTOS
   // =========================
 
+  private obtenerMesActual(): string {
+
+    const fecha =
+      new Date();
+
+    const anio =
+      fecha.getFullYear();
+
+    const mes =
+      String(
+        fecha.getMonth() + 1
+      ).padStart(2, '0');
+
+    return `${anio}-${mes}`;
+  }
+
+  cargarTotalImpuestos(): void {
+
+    this.impuestosService
+      .obtenerResumen(
+        this.obtenerMesActual()
+      )
+      .subscribe({
+
+        next: (
+          resumen: ResumenImpuestos
+        ) => {
+
+          this.resumenImpuestos
+            .set(resumen);
+        },
+
+        error: (
+          err: HttpErrorResponse
+        ) => {
+
+          console.error(
+            '[dashboard] Error al cargar impuestos:',
+            err
+          );
+
+          this.resumenImpuestos
+            .set(null);
+        }
+      });
+  }
+
   abrirImpuestos(): void {
 
     this.mostrarImpuestos
@@ -790,6 +890,25 @@ export class Dashboard implements OnInit {
 
     this.mostrarImpuestos
       .set(false);
+
+    this.cargarTotalImpuestos();
+  }
+
+  abrirPresupuestoImpuestos(): void {
+
+    this.mostrarPresupuestoImpuestos
+      .set(true);
+  }
+
+  cerrarPresupuestoImpuestos(): void {
+
+    this.mostrarPresupuestoImpuestos
+      .set(false);
+  }
+
+  onPresupuestoImpuestosActualizado(): void {
+
+    this.cargarTotalImpuestos();
   }
 
   // =========================
@@ -879,18 +998,6 @@ export class Dashboard implements OnInit {
 
     this.errorEstadisticas
       .set(null);
-
-    /*
-     * CORRECCIÓN:
-     *
-     * EstadisticasService tiene:
-     *
-     * obtener(periodo, fecha?)
-     *
-     * por eso utilizamos:
-     *
-     * obtener('semanal')
-     */
 
     this.estadisticasService
       .obtener('semanal')

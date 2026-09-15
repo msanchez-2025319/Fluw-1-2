@@ -157,6 +157,8 @@
 
   <main class="grid">
 
+    <!-- INGRESOS -->
+
     <section class="card income-card">
 
       <div
@@ -187,6 +189,8 @@
       </app-ingresos-vista-lista>
 
     </section>
+
+    <!-- GRÁFICA -->
 
     <section
       class="card card-graph card-graph-clickable"
@@ -315,6 +319,8 @@
 
     </section>
 
+    <!-- GASTOS -->
+
     <section class="card expense-card">
 
       <div
@@ -403,8 +409,24 @@
 
     </section>
 
+    <!-- IMPUESTOS A PAGAR -->
+
     <section
-      class="card stat-card stat-tight">
+      class="
+        card
+        stat-card
+        stat-tight
+        impuesto-card-clickable
+      "
+      role="button"
+      tabindex="0"
+      aria-label="Abrir presupuesto de impuestos"
+      (click)="abrirPresupuestoImpuestos()"
+      (keydown.enter)="abrirPresupuestoImpuestos()"
+      (keydown.space)="
+        abrirPresupuestoImpuestos();
+        $event.preventDefault()
+      ">
 
       <div
         class="card-header dark centered small">
@@ -419,12 +441,16 @@
 
         <span
           class="stat-value stat-neutral">
-          Q1050.00
+
+          {{ totalImpuestosTexto() }}
+
         </span>
 
       </div>
 
     </section>
+
+    <!-- EVENTOS -->
 
     <section class="card events-card">
 
@@ -497,6 +523,8 @@
 
     </section>
 
+    <!-- CALENDARIO -->
+
     <section
       class="
         card
@@ -535,6 +563,8 @@
 
     </section>
 
+    <!-- FONDO DE EMERGENCIA -->
+
     <section class="card stat-card">
 
       <div
@@ -556,6 +586,8 @@
       </div>
 
     </section>
+
+    <!-- GASTO PLANEADO -->
 
     <section class="card stat-card">
 
@@ -580,6 +612,8 @@
     </section>
 
   </main>
+
+  <!-- MODALES -->
 
   @if (mostrarSueldoFijo()) {
 
@@ -680,11 +714,26 @@
 
   }
 
+  <!-- MODAL NORMAL DE IMPUESTOS -->
+
   @if (mostrarImpuestos()) {
 
     <app-impuestos-modal
       (cerrar)="cerrarImpuestos()">
     </app-impuestos-modal>
+
+  }
+
+  <!-- PRESUPUESTO DE IMPUESTOS -->
+
+  @if (mostrarPresupuestoImpuestos()) {
+
+    <app-presupuesto-impuesto-modal
+      (cerrar)="cerrarPresupuestoImpuestos()"
+      (presupuestoActualizado)="
+        onPresupuestoImpuestosActualizado()
+      ">
+    </app-presupuesto-impuesto-modal>
 
   }
 
