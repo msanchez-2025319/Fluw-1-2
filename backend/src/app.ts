@@ -1,4 +1,5 @@
 ﻿import "dotenv/config";
+
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -9,9 +10,12 @@ import gastosRoutes from "./modules/gastos/gastos.routes.js";
 import impuestosRoutes from "./modules/impuestos/impuestos.routes.js";
 import eventosRoutes from "./modules/eventos/eventos.routes.js";
 import estadisticasRoutes from "./modules/estadisticas/estadisticas.routes.js";
+import ahorrosRoutes from "./modules/ahorros/ahorros.routes.js";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+
+const PORT =
+  process.env.PORT || 3000;
 
 app.use(
   cors({
@@ -21,14 +25,43 @@ app.use(
 );
 
 app.use(cookieParser());
+
 app.use(express.json());
 
-app.use("/api/auth", authRoutes);
-app.use("/api/ingresos", ingresosRoutes);
-app.use("/api/gastos", gastosRoutes);
-app.use("/api/impuestos", impuestosRoutes);
-app.use("/api/eventos", eventosRoutes);
-app.use("/api/estadisticas", estadisticasRoutes);
+app.use(
+  "/api/auth",
+  authRoutes
+);
+
+app.use(
+  "/api/ingresos",
+  ingresosRoutes
+);
+
+app.use(
+  "/api/gastos",
+  gastosRoutes
+);
+
+app.use(
+  "/api/impuestos",
+  impuestosRoutes
+);
+
+app.use(
+  "/api/eventos",
+  eventosRoutes
+);
+
+app.use(
+  "/api/estadisticas",
+  estadisticasRoutes
+);
+
+app.use(
+  "/api/ahorros",
+  ahorrosRoutes
+);
 
 app.use((req, res) => {
   res.status(404).json({

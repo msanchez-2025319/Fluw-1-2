@@ -1,0 +1,350 @@
+<div
+  class="modal-overlay"
+  (click)="cerrarModal()"
+>
+  <section
+    class="ahorro-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Meta de ahorro"
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- BOTÓN CERRAR -->
+    <button
+      type="button"
+      class="cerrar-btn"
+      aria-label="Cerrar"
+      (click)="cerrarModal()"
+    >
+      <img
+        src="/images/cancel.png"
+        alt=""
+        class="cerrar-icono"
+      >
+    </button>
+
+    @if (cargando()) {
+
+      <div class="estado-modal">
+        Cargando ahorro...
+      </div>
+
+    } @else {
+
+      <!-- =========================
+           CREAR / EDITAR AHORRO
+      ========================== -->
+
+      @if (!ahorro() || modoEdicion()) {
+
+        <div class="modal-header">
+          <h2>Meta de ahorro</h2>
+        </div>
+
+        <form
+          class="ahorro-form"
+          [formGroup]="formulario"
+          (ngSubmit)="guardar()"
+        >
+
+          <div class="formulario-contenedor">
+
+            <!-- META DE AHORRO -->
+            <div class="campo">
+
+              <label for="metaAhorro">
+                Monto de ahorro
+              </label>
+
+              <input
+                id="metaAhorro"
+                type="number"
+                min="0.01"
+                step="0.01"
+                formControlName="metaAhorro"
+                placeholder="Ej: Q 00.00"
+              >
+
+            </div>
+
+            <!-- TIPO DE CUOTA -->
+            <div class="campo">
+
+              <label for="tipoCuota">
+                Tipo de cuota
+              </label>
+
+              <select
+                id="tipoCuota"
+                formControlName="tipoCuota"
+              >
+
+                <option value="SEMANAL">
+                  Semanal
+                </option>
+
+                <option value="MENSUAL">
+                  Mensual
+                </option>
+
+                <option value="ANUAL">
+                  Anual
+                </option>
+
+              </select>
+
+            </div>
+
+            <!-- MONTO DE CUOTA -->
+            <div class="campo">
+
+              <label for="montoCuota">
+                Monto de cuota
+              </label>
+
+              <input
+                id="montoCuota"
+                type="number"
+                min="0.01"
+                step="0.01"
+                formControlName="montoCuota"
+                placeholder="Ej: Q 00.00"
+              >
+
+            </div>
+
+          </div>
+
+          <!-- MENSAJE ERROR -->
+          @if (error()) {
+
+            <p class="mensaje-error">
+              {{ error() }}
+            </p>
+
+          }
+
+          <!-- MENSAJE ÉXITO -->
+          @if (mensaje()) {
+
+            <p class="mensaje-exito">
+              {{ mensaje() }}
+            </p>
+
+          }
+
+          <!-- BOTONES -->
+          <div class="acciones">
+
+            @if (modoEdicion()) {
+
+              <button
+                type="button"
+                class="btn-secundario"
+                [disabled]="guardando()"
+                (click)="cancelarEdicion()"
+              >
+                Cancelar
+              </button>
+
+            }
+
+            <button
+              type="submit"
+              class="btn-principal"
+              [disabled]="guardando()"
+            >
+
+              @if (guardando()) {
+                Guardando...
+              } @else {
+                Guardar
+              }
+
+            </button>
+
+          </div>
+
+        </form>
+
+      } @else {
+
+        <!-- =========================
+             VER AHORRO
+        ========================== -->
+
+        @if (ahorro(); as ahorroActual) {
+
+          <div class="modal-header">
+
+            <h2>
+              Ingreso ahorro del mes
+            </h2>
+
+          </div>
+
+          <div class="detalle-ahorro">
+
+            <div class="detalle-contenedor">
+
+              <!-- META -->
+              <div class="detalle-fila">
+
+                <span class="detalle-label">
+                  Meta de ahorro
+                </span>
+
+                <span class="detalle-valor">
+                  {{
+                    formatearMoneda(
+                      ahorroActual.metaAhorro
+                    )
+                  }}
+                </span>
+
+              </div>
+
+              <!-- TIPO CUOTA -->
+              <div class="detalle-fila">
+
+                <span class="detalle-label">
+                  Tipo de cuota
+                </span>
+
+                <span class="detalle-valor">
+                  {{
+                    obtenerTipoCuotaTexto(
+                      ahorroActual.tipoCuota
+                    )
+                  }}
+                </span>
+
+              </div>
+
+              <!-- MONTO CUOTA -->
+              <div class="detalle-fila">
+
+                <span class="detalle-label">
+                  Monto de cuota
+                </span>
+
+                <span class="detalle-valor">
+                  {{
+                    formatearMoneda(
+                      ahorroActual.montoCuota
+                    )
+                  }}
+                </span>
+
+              </div>
+
+              <!-- AHORRO ACTUAL -->
+              <div class="detalle-fila">
+
+                <span class="detalle-label">
+                  Ahorro actual
+                </span>
+
+                <span class="detalle-valor">
+                  {{
+                    formatearMoneda(
+                      ahorroActual.ahorroActual
+                    )
+                  }}
+                </span>
+
+              </div>
+
+            </div>
+
+            <!-- =========================
+                 PROGRESO
+            ========================== -->
+
+            <div class="progreso-contenedor">
+
+              <div class="progreso-texto">
+
+                <span>
+                  Progreso
+                </span>
+
+                <strong>
+                  {{ ahorroActual.porcentaje }}%
+                </strong>
+
+              </div>
+
+              <div class="progreso-barra">
+
+                <div
+                  class="progreso-relleno"
+                  [style.width.%]="ahorroActual.porcentaje"
+                >
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- MENSAJE ERROR -->
+            @if (error()) {
+
+              <p class="mensaje-error">
+                {{ error() }}
+              </p>
+
+            }
+
+            <!-- MENSAJE ÉXITO -->
+            @if (mensaje()) {
+
+              <p class="mensaje-exito">
+                {{ mensaje() }}
+              </p>
+
+            }
+
+            <!-- =========================
+                 BOTONES
+            ========================== -->
+
+            <div class="acciones acciones-detalle">
+
+              <button
+                type="button"
+                class="btn-eliminar"
+                [disabled]="eliminando()"
+                (click)="eliminar()"
+              >
+
+                @if (eliminando()) {
+                  Eliminando...
+                } @else {
+                  Eliminar
+                }
+
+              </button>
+
+              <button
+                type="button"
+                class="btn-editar"
+                [disabled]="eliminando()"
+                (click)="iniciarEdicion()"
+              >
+                Editar
+              </button>
+
+            </div>
+
+          </div>
+
+        }
+
+      }
+
+    }
+
+  </section>
+</div>
