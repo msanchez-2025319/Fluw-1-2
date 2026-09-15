@@ -1,0 +1,249 @@
+<div class="modal-overlay">
+
+  <section class="impuesto-modal">
+
+    <button
+      type="button"
+      class="cerrar-btn"
+      aria-label="Cerrar"
+      (click)="cerrarModal()">
+
+      <img
+        src="/images/cancel.png"
+        alt=""
+        class="cerrar-icono"
+      >
+
+    </button>
+
+    <header class="modal-header">
+      <h2>Impuesto por pagar</h2>
+    </header>
+
+
+    @if (cargando()) {
+
+      <div class="estado-modal">
+        Cargando...
+      </div>
+
+    } @else {
+
+
+      @if (!presupuesto() || modoEdicion()) {
+
+        <form
+          class="presupuesto-form"
+          [formGroup]="formulario"
+          (ngSubmit)="guardar()">
+
+          <div class="formulario-contenedor">
+
+            <div class="campo">
+
+              <label for="montoPresupuesto">
+                Monto de presupuesto
+              </label>
+
+              <div class="input-moneda">
+
+                <span>Q</span>
+
+                <input
+                  id="montoPresupuesto"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="00.00"
+                  formControlName="monto"
+                >
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          @if (
+            formulario.controls.monto.invalid &&
+            formulario.controls.monto.touched
+          ) {
+
+            <p class="mensaje-error">
+              Ingresa un monto mayor a Q0.00.
+            </p>
+
+          }
+
+
+          @if (error()) {
+
+            <p class="mensaje-error">
+              {{ error() }}
+            </p>
+
+          }
+
+
+          @if (exito()) {
+
+            <p class="mensaje-exito">
+              {{ exito() }}
+            </p>
+
+          }
+
+
+          <div class="acciones">
+
+            @if (modoEdicion()) {
+
+              <button
+                type="button"
+                class="btn-cancelar"
+                (click)="cancelarEdicion()">
+
+                Cancelar
+
+              </button>
+
+            }
+
+            <button
+              type="submit"
+              class="btn-guardar"
+              [disabled]="guardando()">
+
+              {{
+                guardando()
+                  ? 'Guardando...'
+                  : 'Guardar'
+              }}
+
+            </button>
+
+          </div>
+
+        </form>
+
+
+      } @else {
+
+        <div class="detalle-presupuesto">
+
+          <div class="detalle-contenedor">
+
+            <div class="detalle-campo">
+
+              <span class="detalle-label">
+                Monto de presupuesto
+              </span>
+
+              <div class="detalle-valor">
+                {{
+                  formatearMoneda(
+                    presupuesto()!.monto
+                  )
+                }}
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="progreso-contenedor">
+
+            <div class="progreso-texto">
+
+              <span>
+                Progreso
+              </span>
+
+              <strong>
+                {{ porcentaje() }}%
+              </strong>
+
+            </div>
+
+            <div class="progreso-barra">
+
+              <div
+                class="progreso-relleno"
+                [style.width.%]="porcentaje()">
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="total-impuestos">
+
+            Impuestos acumulados:
+            <strong>
+              {{
+                formatearMoneda(
+                  totalImpuestos()
+                )
+              }}
+            </strong>
+
+          </div>
+
+
+          @if (error()) {
+
+            <p class="mensaje-error">
+              {{ error() }}
+            </p>
+
+          }
+
+
+          @if (exito()) {
+
+            <p class="mensaje-exito">
+              {{ exito() }}
+            </p>
+
+          }
+
+
+          <div class="acciones acciones-detalle">
+
+            <button
+              type="button"
+              class="btn-eliminar"
+              [disabled]="eliminando()"
+              (click)="eliminar()">
+
+              {{
+                eliminando()
+                  ? 'Eliminando...'
+                  : 'Eliminar'
+              }}
+
+            </button>
+
+            <button
+              type="button"
+              class="btn-editar"
+              (click)="editar()">
+
+              Editar
+
+            </button>
+
+          </div>
+
+        </div>
+
+      }
+
+    }
+
+  </section>
+
+</div>

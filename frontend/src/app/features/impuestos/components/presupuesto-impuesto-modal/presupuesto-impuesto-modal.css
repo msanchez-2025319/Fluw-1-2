@@ -1,0 +1,546 @@
+:host {
+  display: block;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(156, 168, 148, 0.92);
+}
+
+.impuesto-modal {
+  position: relative;
+
+  width: min(100%, 420px);
+
+  padding: 22px 20px 24px;
+
+  box-sizing: border-box;
+
+  background: #23482f;
+
+  border-radius: 18px;
+
+  font-family:
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+/* CERRAR */
+
+.cerrar-btn {
+  position: absolute;
+
+  top: 12px;
+  right: 16px;
+
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0;
+  padding: 0;
+
+  background-color: #d5c8b4 !important;
+
+  border: none !important;
+  border-radius: 8px;
+
+  box-sizing: border-box;
+
+  cursor: pointer;
+
+  z-index: 20;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  box-shadow: none;
+
+  transition:
+    transform 0.15s ease;
+}
+
+.cerrar-btn .cerrar-icono {
+  display: block;
+
+  width: 18px;
+  height: 18px;
+
+  margin: 0;
+  padding: 0;
+
+  object-fit: contain;
+
+  background: transparent;
+
+  pointer-events: none;
+}
+
+.cerrar-btn:hover,
+.cerrar-btn:focus,
+.cerrar-btn:focus-visible,
+.cerrar-btn:active {
+  background-color: #d5c8b4 !important;
+}
+
+.cerrar-btn:focus,
+.cerrar-btn:focus-visible {
+  outline: none;
+}
+
+.cerrar-btn:active {
+  transform: scale(0.96);
+}
+
+/* HEADER */
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 36px;
+
+  margin-bottom: 14px;
+
+  padding: 0 45px;
+}
+
+.modal-header h2 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.2;
+
+  text-align: center;
+}
+
+/* FORMULARIO */
+
+.presupuesto-form {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+.formulario-contenedor {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+
+  padding: 14px 10px;
+
+  background: #f6f1e5;
+
+  border-radius: 18px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.campo label {
+  padding-left: 10px;
+
+  color: #22301f;
+
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.input-moneda {
+  width: 100%;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  padding: 0 14px;
+
+  background: #ffffff;
+
+  border-radius: 999px;
+}
+
+.input-moneda span {
+  margin-right: 5px;
+
+  color: #000000;
+
+  font-size: 0.88rem;
+}
+
+.input-moneda input {
+  width: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #000000;
+
+  font-family:
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 0.88rem;
+
+  text-align: center;
+}
+
+.input-moneda input::placeholder {
+  color: #222222;
+
+  opacity: 1;
+}
+
+.input-moneda:focus-within {
+  box-shadow:
+    0 0 0 2px rgba(111, 207, 84, 0.45);
+}
+
+.input-moneda input[type="number"]::-webkit-inner-spin-button,
+.input-moneda input[type="number"]::-webkit-outer-spin-button {
+  margin: 0;
+
+  -webkit-appearance: none;
+}
+
+.input-moneda input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+/* DETALLE */
+
+.detalle-presupuesto {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+.detalle-contenedor {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+
+  padding: 14px 10px;
+
+  background: #f6f1e5;
+
+  border-radius: 18px;
+}
+
+.detalle-campo {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.detalle-label {
+  padding-left: 10px;
+
+  color: #22301f;
+
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.detalle-valor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 38px;
+
+  box-sizing: border-box;
+
+  padding: 7px 14px;
+
+  background: #ffffff;
+
+  border-radius: 999px;
+
+  color: #000000;
+
+  font-size: 0.88rem;
+  font-weight: 400;
+
+  text-align: center;
+}
+
+/* PROGRESO */
+
+.progreso-contenedor {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 2px 6px 0;
+}
+
+.progreso-texto {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 5px;
+
+  color: #ffffff;
+
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.progreso-texto strong {
+  color: #ffffff;
+
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.progreso-barra {
+  width: 100%;
+  height: 12px;
+
+  overflow: hidden;
+
+  background: #d7d7d2;
+
+  border-radius: 999px;
+}
+
+.progreso-relleno {
+  height: 100%;
+
+  background: #6fcf54;
+
+  border-radius: inherit;
+
+  transition:
+    width 0.35s ease;
+}
+
+/* TOTAL */
+
+.total-impuestos {
+  color: #ffffff;
+
+  font-size: 0.76rem;
+
+  text-align: center;
+}
+
+.total-impuestos strong {
+  color: #ffffff;
+
+  font-weight: 800;
+}
+
+/* BOTONES */
+
+.acciones {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  margin-top: 0;
+}
+
+.acciones-detalle {
+  gap: 28px;
+
+  margin-top: 4px;
+}
+
+.acciones button {
+  min-width: 120px;
+  min-height: 38px;
+
+  padding: 9px 22px;
+
+  border: none;
+  border-radius: 999px;
+
+  font-family:
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.acciones button:hover:not(:disabled) {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.16);
+}
+
+.acciones button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.acciones button:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+.btn-guardar,
+.btn-editar {
+  background: #ffffff;
+
+  color: #22301f;
+}
+
+.btn-cancelar {
+  background: #f6f1e5;
+
+  color: #22301f;
+}
+
+.btn-eliminar {
+  background: #e1483a;
+
+  color: #000000;
+}
+
+/* MENSAJES */
+
+.mensaje-error,
+.mensaje-exito {
+  margin: 0;
+
+  padding: 8px 12px;
+
+  border-radius: 10px;
+
+  font-size: 0.8rem;
+  font-weight: 700;
+
+  text-align: center;
+}
+
+.mensaje-error {
+  background:
+    rgba(225, 72, 58, 0.18);
+
+  color: #ffffff;
+}
+
+.mensaje-exito {
+  background:
+    rgba(111, 207, 84, 0.18);
+
+  color: #ffffff;
+}
+
+.estado-modal {
+  min-height: 140px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #ffffff;
+
+  font-weight: 700;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 520px) {
+
+  .modal-overlay {
+    padding: 12px;
+  }
+
+  .impuesto-modal {
+    width: 100%;
+
+    padding:
+      20px
+      14px
+      22px;
+  }
+
+  .modal-header {
+    padding: 0 42px;
+  }
+
+  .modal-header h2 {
+    font-size: 1.15rem;
+  }
+
+  .formulario-contenedor,
+  .detalle-contenedor {
+    padding:
+      12px
+      8px;
+  }
+
+  .acciones-detalle {
+    gap: 12px;
+  }
+
+  .acciones button {
+    min-width: 105px;
+
+    padding:
+      9px
+      16px;
+  }
+}

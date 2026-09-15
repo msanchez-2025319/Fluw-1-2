@@ -11,11 +11,16 @@ import impuestosRoutes from "./modules/impuestos/impuestos.routes.js";
 import eventosRoutes from "./modules/eventos/eventos.routes.js";
 import estadisticasRoutes from "./modules/estadisticas/estadisticas.routes.js";
 import ahorrosRoutes from "./modules/ahorros/ahorros.routes.js";
+import presupuestoImpuestosRoutes from "./modules/presupuesto-impuestos/presupuesto-impuestos.routes.js";
 
 const app = express();
 
 const PORT =
   process.env.PORT || 3000;
+
+/* =========================
+   MIDDLEWARES
+========================= */
 
 app.use(
   cors({
@@ -27,6 +32,10 @@ app.use(
 app.use(cookieParser());
 
 app.use(express.json());
+
+/* =========================
+   RUTAS
+========================= */
 
 app.use(
   "/api/auth",
@@ -63,11 +72,24 @@ app.use(
   ahorrosRoutes
 );
 
+app.use(
+  "/api/presupuesto-impuestos",
+  presupuestoImpuestosRoutes
+);
+
+/* =========================
+   404
+========================= */
+
 app.use((req, res) => {
   res.status(404).json({
     message: "Ruta no encontrada",
   });
 });
+
+/* =========================
+   SERVIDOR
+========================= */
 
 app.listen(PORT, () => {
   console.log(
