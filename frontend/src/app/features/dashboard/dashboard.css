@@ -1248,3 +1248,44 @@
     rgba(35, 72, 47, 0.35);
   outline-offset: 3px;
 }
+
+
+/* =========================
+   GASTO PLANEADO
+========================= */
+
+.gasto-planeado-card-clickable {
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.gasto-planeado-card-clickable:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 20px
+    rgba(0, 0, 0, 0.14);
+}
+
+.gasto-planeado-card-clickable:active {
+  transform: translateY(0);
+}
+
+.gasto-planeado-card-clickable:focus-visible {
+  outline:
+    3px solid
+    rgba(35, 72, 47, 0.35);
+
+  outline-offset: 3px;
+}
+
+.gasto-planeado-value {
+  overflow: hidden;
+  color: #000000;
+
+  transition:
+    background 0.35s ease;
+}

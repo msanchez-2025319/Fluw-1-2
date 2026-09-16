@@ -21,6 +21,7 @@ model User {
   ahorro              Ahorro?
   presupuestoImpuesto PresupuestoImpuesto?
   fondoEmergencia     FondoEmergencia?
+  gastoPlaneado       GastoPlaneado?
 
   @@map("users")
 }
@@ -119,6 +120,30 @@ model FondoEmergencia {
 
   @@map("fondos_emergencia")
 }
+
+/**
+ * =========================
+ * GASTO PLANEADO
+ * =========================
+ */
+
+model GastoPlaneado {
+  id        String    @id @default(uuid())
+  monto     Decimal   @db.Decimal(12, 2)
+  tipoCuota TipoCuota
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("gastos_planeados")
+}
+
+/**
+ * =========================
+ * ENUMS
+ * =========================
+ */
 
 enum Role {
   ADMIN

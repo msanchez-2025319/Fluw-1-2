@@ -14,6 +14,7 @@ import { IngresosService } from '../../services/ingresos.service';
 import { GastosService } from '../../services/gastos.service';
 import { AhorrosService } from '../../services/ahorros.service';
 import { FondoEmergenciaService } from '../../services/fondo-emergencia.service';
+import { GastosPlaneadosService } from '../../services/gastos-planeados.service';
 
 import {
   ImpuestosService,
@@ -48,6 +49,10 @@ import {
 import {
   FondoEmergencia
 } from '../fondo-emergencia/models/fondo-emergencia.model';
+
+import {
+  GastoPlaneado
+} from '../gastos-planeados/models/gasto-planeado.model';
 
 import {
   SueldoFijoModal
@@ -114,6 +119,10 @@ import {
   FondoEmergenciaModal
 } from '../fondo-emergencia/components/fondo-emergencia-modal/fondo-emergencia-modal';
 
+import {
+  GastoPlaneadoModal
+} from '../gastos-planeados/components/gasto-planeado-modal/gasto-planeado-modal';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -137,7 +146,8 @@ import {
     EventosModal,
     EstadisticasModal,
     AhorroModal,
-    FondoEmergenciaModal
+    FondoEmergenciaModal,
+    GastoPlaneadoModal
   ],
 
   templateUrl: './dashboard.html',
@@ -159,6 +169,9 @@ export class Dashboard implements OnInit {
 
   private fondoEmergenciaService =
     inject(FondoEmergenciaService);
+
+  private gastosPlaneadosService =
+    inject(GastosPlaneadosService);
 
   private impuestosService =
     inject(ImpuestosService);
@@ -186,6 +199,9 @@ export class Dashboard implements OnInit {
 
   fondoEmergencia =
     signal<FondoEmergencia | null>(null);
+
+  gastoPlaneado =
+    signal<GastoPlaneado | null>(null);
 
   resumenImpuestos =
     signal<ResumenImpuestos | null>(null);
@@ -303,6 +319,58 @@ export class Dashboard implements OnInit {
       );
     });
 
+  gastoPlaneadoTexto =
+    computed(() => {
+
+      const registro =
+        this.gastoPlaneado();
+
+      if (!registro) {
+        return 'Q0.00';
+      }
+
+      return new Intl.NumberFormat(
+        'es-GT',
+        {
+          style: 'currency',
+          currency: 'GTQ',
+          minimumFractionDigits: 2
+        }
+      ).format(
+        Number(registro.monto) || 0
+      );
+    });
+
+  porcentajeGastoPlaneado =
+    computed(() => {
+
+      const porcentaje =
+        Number(
+          this.gastoPlaneado()
+            ?.porcentaje ?? 0
+        );
+
+      return Math.min(
+        100,
+        Math.max(0, porcentaje)
+      );
+    });
+
+  fondoGastoPlaneado =
+    computed(() => {
+
+      const porcentaje =
+        this.porcentajeGastoPlaneado();
+
+      return `linear-gradient(
+        to right,
+        #e1483a 0%,
+        #e1483a ${porcentaje}%,
+        #6fcf54 ${porcentaje}%,
+        #6fcf54 100%
+      )`;
+    });
+
   totalImpuestos =
     computed(() =>
       Number(
@@ -398,6 +466,9 @@ export class Dashboard implements OnInit {
   mostrarFondoEmergencia =
     signal(false);
 
+  mostrarGastoPlaneado =
+    signal(false);
+
   cargandoEventos =
     signal(false);
 
@@ -435,6 +506,8 @@ export class Dashboard implements OnInit {
     this.cargarAhorro();
 
     this.cargarFondoEmergencia();
+
+    this.cargarGastoPlaneado();
 
     this.cargarTotalImpuestos();
   }
@@ -527,6 +600,48 @@ export class Dashboard implements OnInit {
     fondo: FondoEmergencia | null
   ): void {
     this.fondoEmergencia.set(fondo);
+  }
+
+  // =========================
+  // GASTOS PLANEADOS
+  // =========================
+
+  cargarGastoPlaneado(): void {
+
+    this.gastosPlaneadosService
+      .obtener()
+      .subscribe({
+
+        next: (res) => {
+          this.gastoPlaneado.set(
+            res.gastoPlaneado
+          );
+        },
+
+        error: (err: HttpErrorResponse) => {
+          console.error(
+            '[dashboard] Error al cargar gasto planeado:',
+            err
+          );
+
+          this.gastoPlaneado.set(null);
+        }
+      });
+  }
+
+  abrirGastoPlaneado(): void {
+    this.mostrarGastoPlaneado.set(true);
+  }
+
+  cerrarGastoPlaneado(): void {
+    this.mostrarGastoPlaneado.set(false);
+    this.cargarGastoPlaneado();
+  }
+
+  onGastoPlaneadoActualizado(
+    gastoPlaneado: GastoPlaneado | null
+  ): void {
+    this.gastoPlaneado.set(gastoPlaneado);
   }
 
   // =========================
@@ -796,6 +911,8 @@ export class Dashboard implements OnInit {
       .set(false);
 
     this.cargarEstadisticasSemanales();
+
+    this.cargarGastoPlaneado();
   }
 
   abrirTablaGastos(): void {
@@ -849,6 +966,8 @@ export class Dashboard implements OnInit {
 
     this.cargarEstadisticasSemanales();
 
+    this.cargarGastoPlaneado();
+
     this.cerrarEditarGasto();
   }
 
@@ -865,6 +984,8 @@ export class Dashboard implements OnInit {
     );
 
     this.cargarEstadisticasSemanales();
+
+    this.cargarGastoPlaneado();
 
     this.cerrarEditarGasto();
   }
@@ -896,6 +1017,8 @@ export class Dashboard implements OnInit {
           );
 
           this.cargarEstadisticasSemanales();
+
+          this.cargarGastoPlaneado();
         },
 
         error: (

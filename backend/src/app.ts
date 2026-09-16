@@ -13,6 +13,7 @@ import estadisticasRoutes from "./modules/estadisticas/estadisticas.routes.js";
 import ahorrosRoutes from "./modules/ahorros/ahorros.routes.js";
 import presupuestoImpuestosRoutes from "./modules/presupuesto-impuestos/presupuesto-impuestos.routes.js";
 import fondoEmergenciaRoutes from "./modules/fondo-emergencia/fondo-emergencia.routes.js";
+import gastosPlaneadosRoutes from "./modules/gastos-planeados/gastos-planeados.routes.js";
 
 const app = express();
 
@@ -81,6 +82,11 @@ app.use(
 app.use(
   "/api/fondo-emergencia",
   fondoEmergenciaRoutes
+);
+
+app.use(
+  "/api/gastos-planeados",
+  gastosPlaneadosRoutes
 );
 
 /* =========================
