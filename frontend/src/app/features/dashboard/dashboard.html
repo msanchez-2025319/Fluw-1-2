@@ -599,7 +599,17 @@
 
     <!-- GASTO PLANEADO -->
 
-    <section class="card stat-card">
+    <section
+      class="card stat-card gasto-planeado-card-clickable"
+      role="button"
+      tabindex="0"
+      aria-label="Abrir gasto planeado"
+      (click)="abrirGastoPlaneado()"
+      (keydown.enter)="abrirGastoPlaneado()"
+      (keydown.space)="
+        abrirGastoPlaneado();
+        $event.preventDefault()
+      ">
 
       <div
         class="card-header dark centered small">
@@ -613,8 +623,9 @@
       <div class="stat-body">
 
         <span
-          class="stat-value stat-red">
-          Q10,000.00
+          class="stat-value gasto-planeado-value"
+          [style.background]="fondoGastoPlaneado()">
+          {{ gastoPlaneadoTexto() }}
         </span>
 
       </div>
@@ -786,6 +797,19 @@
         onFondoEmergenciaActualizado($event)
       ">
     </app-fondo-emergencia-modal>
+
+  }
+
+  <!-- GASTOS PLANEADOS -->
+
+  @if (mostrarGastoPlaneado()) {
+
+    <app-gasto-planeado-modal
+      (cerrar)="cerrarGastoPlaneado()"
+      (gastoPlaneadoActualizado)="
+        onGastoPlaneadoActualizado($event)
+      ">
+    </app-gasto-planeado-modal>
 
   }
 
