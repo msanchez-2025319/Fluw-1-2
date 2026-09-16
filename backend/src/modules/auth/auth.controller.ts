@@ -5,6 +5,7 @@ import type {
 
 import {
   loginUser,
+  loginWithGoogle,
   refreshAccessToken,
   logoutUser,
   AuthError,
@@ -20,7 +21,85 @@ const isProduction =
   process.env.NODE_ENV === "production";
 
 /* =========================
-   LOGIN
+   CONFIGURAR COOKIES
+========================= */
+
+function setAuthCookies(
+  res: Response,
+  accessToken: string,
+  refreshToken: string,
+  sessionExpiresAt: Date
+) {
+
+  res.cookie(
+    "access_token",
+    accessToken,
+    {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: "strict",
+      maxAge:
+        parseDurationToMs(
+          ACCESS_TOKEN_EXPIRES_IN
+        ),
+      path: "/",
+    }
+  );
+
+  res.cookie(
+    "refresh_token",
+    refreshToken,
+    {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: "strict",
+      expires: sessionExpiresAt,
+      path: "/",
+    }
+  );
+}
+
+/* =========================
+   CREAR NOTIFICACIÓN LOGIN
+========================= */
+
+async function crearNotificacionLogin(
+  user: {
+    id: string;
+    email: string;
+  },
+  google = false
+) {
+
+  try {
+
+    await prisma.notificacion.create({
+      data: {
+        tipo: "INICIO_SESION",
+        titulo: "Inicio de sesión",
+        mensaje: google
+          ? `Se inició sesión con Google correctamente con la cuenta ${user.email}.`
+          : `Se inició sesión correctamente con la cuenta ${user.email}.`,
+        userId: user.id
+      }
+    });
+
+  } catch (notificationError) {
+
+    /*
+     * Una falla en las notificaciones
+     * nunca debe impedir el inicio
+     * de sesión.
+     */
+    console.error(
+      "[auth] Error al crear notificación de inicio de sesión:",
+      notificationError
+    );
+  }
+}
+
+/* =========================
+   LOGIN TRADICIONAL
 ========================= */
 
 export async function login(
@@ -53,64 +132,15 @@ export async function login(
       password
     );
 
-    /* =========================
-       NOTIFICACIÓN DE LOGIN
-    ========================= */
-
-    try {
-
-      await prisma.notificacion.create({
-        data: {
-          tipo: "INICIO_SESION",
-          titulo: "Inicio de sesión",
-          mensaje:
-            `Se inició sesión correctamente con la cuenta ${user.email}.`,
-          userId: user.id
-        }
-      });
-
-    } catch (notificationError) {
-
-      /*
-       * Una falla al guardar la notificación
-       * no debe impedir que el usuario
-       * pueda iniciar sesión.
-       */
-      console.error(
-        "[auth] Error al crear notificación de inicio de sesión:",
-        notificationError
-      );
-    }
-
-    /* =========================
-       COOKIES
-    ========================= */
-
-    res.cookie(
-      "access_token",
-      accessToken,
-      {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: "strict",
-        maxAge:
-          parseDurationToMs(
-            ACCESS_TOKEN_EXPIRES_IN
-          ),
-        path: "/",
-      }
+    await crearNotificacionLogin(
+      user
     );
 
-    res.cookie(
-      "refresh_token",
+    setAuthCookies(
+      res,
+      accessToken,
       refreshToken,
-      {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: "strict",
-        expires: sessionExpiresAt,
-        path: "/",
-      }
+      sessionExpiresAt
     );
 
     return res.status(200).json({
@@ -130,7 +160,97 @@ export async function login(
         });
     }
 
-    console.error(error);
+    console.error(
+      "[auth/login] Error:",
+      error
+    );
+
+    return res.status(500).json({
+      message:
+        "Error interno del servidor"
+    });
+  }
+}
+
+/* =========================
+   LOGIN CON GOOGLE
+========================= */
+
+export async function googleLogin(
+  req: Request,
+  res: Response
+) {
+
+  const {
+    credential
+  } = req.body;
+
+  if (
+    !credential ||
+    typeof credential !== "string"
+  ) {
+
+    return res.status(400).json({
+      message:
+        "La credencial de Google es obligatoria"
+    });
+  }
+
+  try {
+
+    const {
+      accessToken,
+      refreshToken,
+      sessionExpiresAt,
+      user
+    } = await loginWithGoogle(
+      credential
+    );
+
+    /*
+     * Creamos la misma notificación
+     * de inicio de sesión utilizada
+     * por Fluw.
+     */
+    await crearNotificacionLogin(
+      user,
+      true
+    );
+
+    /*
+     * Google utiliza exactamente
+     * las mismas cookies y sesión
+     * que el login tradicional.
+     */
+    setAuthCookies(
+      res,
+      accessToken,
+      refreshToken,
+      sessionExpiresAt
+    );
+
+    return res.status(200).json({
+      message:
+        "Inicio de sesión con Google exitoso",
+      user,
+      sessionExpiresAt,
+    });
+
+  } catch (error) {
+
+    if (error instanceof AuthError) {
+
+      return res
+        .status(error.statusCode)
+        .json({
+          message: error.message
+        });
+    }
+
+    console.error(
+      "[auth/google] Error:",
+      error
+    );
 
     return res.status(500).json({
       message:
@@ -201,7 +321,10 @@ export async function refresh(
         });
     }
 
-    console.error(error);
+    console.error(
+      "[auth/refresh] Error:",
+      error
+    );
 
     return res.status(500).json({
       message:

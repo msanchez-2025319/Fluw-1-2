@@ -1,7 +1,15 @@
 <div class="page">
-  <!-- Sección izquierda: Marca -->
+
+  <!-- =========================
+       SECCIÓN IZQUIERDA: MARCA
+  ========================== -->
+
   <section class="brand">
-    <div class="bubbles" aria-hidden="true">
+
+    <div
+      class="bubbles"
+      aria-hidden="true"
+    >
       <span class="bubble b1"></span>
       <span class="bubble b2"></span>
       <span class="bubble b3"></span>
@@ -12,6 +20,7 @@
     </div>
 
     <div class="brand-content">
+
       <div class="logo-backdrop">
         <img
           src="/images/Fluw.png"
@@ -23,25 +32,46 @@
       <p class="tagline">
         Organiza tus ingresos y gastos de forma fácil y clara.
       </p>
+
     </div>
+
   </section>
 
-  <!-- Sección derecha: Login -->
+
+  <!-- =========================
+       SECCIÓN DERECHA: LOGIN
+  ========================== -->
+
   <section class="panel">
+
     <div class="card">
+
       <header class="card-header">
         <h2>Iniciar sesión</h2>
-        <p>Ingresa tus credenciales para continuar.</p>
+
+        <p>
+          Ingresa tus credenciales para continuar.
+        </p>
       </header>
+
+
+      <!-- =========================
+           LOGIN TRADICIONAL
+      ========================== -->
 
       <form
         [formGroup]="form"
         (ngSubmit)="submit()"
         novalidate
       >
-        <!-- Correo electrónico -->
+
+        <!-- CORREO -->
+
         <div class="field">
-          <label for="email">Correo electrónico</label>
+
+          <label for="email">
+            Correo electrónico
+          </label>
 
           <input
             id="email"
@@ -52,15 +82,23 @@
           />
 
           @if (email.invalid && email.touched) {
+
             <span class="field-error">
               Ingresa un correo electrónico válido.
             </span>
+
           }
+
         </div>
 
-        <!-- Contraseña -->
+
+        <!-- CONTRASEÑA -->
+
         <div class="field">
-          <label for="password">Contraseña</label>
+
+          <label for="password">
+            Contraseña
+          </label>
 
           <input
             id="password"
@@ -71,35 +109,103 @@
           />
 
           @if (password.invalid && password.touched) {
+
             <span class="field-error">
               La contraseña es obligatoria.
             </span>
+
           }
+
         </div>
 
-        <!-- Error de inicio de sesión -->
+
+        <!-- ERROR -->
+
         @if (errorMessage()) {
-          <div class="form-error" role="alert">
+
+          <div
+            class="form-error"
+            role="alert"
+          >
             {{ errorMessage() }}
           </div>
+
         }
 
-        <!-- Botón -->
+
+        <!-- BOTÓN LOGIN NORMAL -->
+
         <button
           type="submit"
-          [disabled]="loading()"
+          [disabled]="loading() || googleLoading()"
         >
+
           @if (loading()) {
+
             <span
               class="spinner"
               aria-hidden="true"
             ></span>
+
             Verificando...
+
           } @else {
+
             Iniciar sesión
+
           }
+
         </button>
+
       </form>
+
+
+      <!-- =========================
+           SEPARADOR
+      ========================== -->
+
+      <div class="login-divider">
+
+        <span></span>
+
+        <p>o continúa con</p>
+
+        <span></span>
+
+      </div>
+
+
+      <!-- =========================
+           GOOGLE
+      ========================== -->
+
+      <div class="google-login-container">
+
+        @if (googleLoading()) {
+
+          <div class="google-loading">
+
+            <span
+              class="google-spinner"
+              aria-hidden="true"
+            ></span>
+
+            Iniciando sesión con Google...
+
+          </div>
+
+        }
+
+        <div
+          id="google-signin-button"
+          class="google-signin-button"
+          [class.google-hidden]="googleLoading()"
+        ></div>
+
+      </div>
+
     </div>
+
   </section>
+
 </div>
