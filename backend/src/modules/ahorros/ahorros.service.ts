@@ -10,7 +10,11 @@ export class AhorroError extends Error {
   }
 }
 
-const TIPOS_CUOTA_VALIDOS = ["SEMANAL", "MENSUAL", "ANUAL"];
+const TIPOS_CUOTA_VALIDOS = [
+  "SEMANAL",
+  "MENSUAL",
+  "ANUAL",
+];
 
 export interface AhorroInput {
   metaAhorro: number | string;
@@ -18,7 +22,14 @@ export interface AhorroInput {
   montoCuota: number | string;
 }
 
-function validarMonto(valor: unknown, campo: string): number {
+/* =========================
+   VALIDACIONES
+========================= */
+
+function validarMonto(
+  valor: unknown,
+  campo: string
+): number {
   if (
     valor === undefined ||
     valor === null ||
@@ -41,10 +52,14 @@ function validarMonto(valor: unknown, campo: string): number {
   return numero;
 }
 
-function validarTipoCuota(tipoCuota: unknown): TipoCuota {
+function validarTipoCuota(
+  tipoCuota: unknown
+): TipoCuota {
   if (
     !tipoCuota ||
-    !TIPOS_CUOTA_VALIDOS.includes(String(tipoCuota))
+    !TIPOS_CUOTA_VALIDOS.includes(
+      String(tipoCuota)
+    )
   ) {
     throw new AhorroError(
       `El campo "tipoCuota" es obligatorio y debe ser uno de: ${TIPOS_CUOTA_VALIDOS.join(", ")}`
@@ -54,9 +69,13 @@ function validarTipoCuota(tipoCuota: unknown): TipoCuota {
   return tipoCuota as TipoCuota;
 }
 
-function construirDatosValidados(input: AhorroInput) {
+function construirDatosValidados(
+  input: AhorroInput
+) {
   if (!input || typeof input !== "object") {
-    throw new AhorroError("Los datos del ahorro son obligatorios");
+    throw new AhorroError(
+      "Los datos del ahorro son obligatorios"
+    );
   }
 
   const metaAhorro = validarMonto(
@@ -86,6 +105,10 @@ function construirDatosValidados(input: AhorroInput) {
   };
 }
 
+/* =========================
+   PORCENTAJE
+========================= */
+
 function calcularPorcentaje(
   ahorroActual: number,
   metaAhorro: number
@@ -103,21 +126,52 @@ function calcularPorcentaje(
   );
 }
 
-function formatearRespuesta(ahorro: any) {
-  const metaAhorro = Number(ahorro.metaAhorro);
-  const montoCuota = Number(ahorro.montoCuota);
-  const ahorroActual = Number(ahorro.ahorroActual);
+/* =========================
+   FORMATEAR MONTO
+========================= */
 
-  const porcentaje = calcularPorcentaje(
-    ahorroActual,
-    metaAhorro
+function formatearMonto(
+  monto: number
+): string {
+  return monto.toLocaleString(
+    "es-GT",
+    {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }
   );
+}
+
+/* =========================
+   FORMATEAR RESPUESTA
+========================= */
+
+function formatearRespuesta(
+  ahorro: any
+) {
+  const metaAhorro =
+    Number(ahorro.metaAhorro);
+
+  const montoCuota =
+    Number(ahorro.montoCuota);
+
+  const ahorroActual =
+    Number(ahorro.ahorroActual);
+
+  const porcentaje =
+    calcularPorcentaje(
+      ahorroActual,
+      metaAhorro
+    );
 
   return {
     id: ahorro.id,
 
     metaAhorro,
-    tipoCuota: ahorro.tipoCuota,
+
+    tipoCuota:
+      ahorro.tipoCuota,
+
     montoCuota,
 
     ahorroActual,
@@ -126,10 +180,89 @@ function formatearRespuesta(ahorro: any) {
       porcentaje.toFixed(2)
     ),
 
-    createdAt: ahorro.createdAt,
-    updatedAt: ahorro.updatedAt,
+    createdAt:
+      ahorro.createdAt,
+
+    updatedAt:
+      ahorro.updatedAt,
   };
 }
+
+/* =========================
+   NOTIFICACIÓN META AHORRO
+========================= */
+
+async function verificarMetaAhorro(
+  userId: string,
+  ahorro: {
+    id: string;
+    metaAhorro: any;
+    ahorroActual: any;
+  }
+) {
+  const metaAhorro =
+    Number(ahorro.metaAhorro);
+
+  const ahorroActual =
+    Number(ahorro.ahorroActual);
+
+  /*
+   * Todavía no llegó a la meta.
+   */
+  if (
+    ahorroActual < metaAhorro
+  ) {
+    return;
+  }
+
+  /*
+   * Esta referencia permite distinguir
+   * una meta de otra.
+   *
+   * Si el usuario cambia de Q5,000
+   * a Q10,000, la nueva meta podrá
+   * generar otra notificación.
+   */
+  const referencia =
+    `[AHORRO:${ahorro.id}:META:${metaAhorro.toFixed(2)}]`;
+
+  const existente =
+    await prisma.notificacion.findFirst({
+      where: {
+        userId,
+        tipo: "META_AHORRO",
+
+        mensaje: {
+          contains: referencia,
+        },
+      },
+    });
+
+  /*
+   * Ya notificamos esta meta.
+   */
+  if (existente) {
+    return;
+  }
+
+  await prisma.notificacion.create({
+    data: {
+      tipo: "META_AHORRO",
+
+      titulo:
+        "Meta de ahorro alcanzada",
+
+      mensaje:
+        `¡Felicidades! Alcanzaste tu meta de ahorro de Q${formatearMonto(metaAhorro)}. ${referencia}`,
+
+      userId,
+    },
+  });
+}
+
+/* =========================
+   CREAR AHORRO
+========================= */
 
 export async function crearAhorro(
   userId: string,
@@ -157,7 +290,9 @@ export async function crearAhorro(
   }
 
   const data =
-    construirDatosValidados(input);
+    construirDatosValidados(
+      input
+    );
 
   const ahorro =
     await prisma.ahorro.create({
@@ -168,8 +303,14 @@ export async function crearAhorro(
       },
     });
 
-  return formatearRespuesta(ahorro);
+  return formatearRespuesta(
+    ahorro
+  );
 }
+
+/* =========================
+   OBTENER AHORRO
+========================= */
 
 export async function obtenerAhorro(
   userId: string
@@ -192,8 +333,34 @@ export async function obtenerAhorro(
     return null;
   }
 
-  return formatearRespuesta(ahorro);
+  /*
+   * Cada vez que consultamos el ahorro
+   * comprobamos si ya alcanzó su meta.
+   */
+  try {
+    await verificarMetaAhorro(
+      userId,
+      ahorro
+    );
+  } catch (error) {
+    /*
+     * Una falla en notificaciones
+     * no debe impedir cargar el ahorro.
+     */
+    console.error(
+      "[ahorros] Error al verificar meta:",
+      error
+    );
+  }
+
+  return formatearRespuesta(
+    ahorro
+  );
 }
+
+/* =========================
+   ACTUALIZAR AHORRO
+========================= */
 
 export async function actualizarAhorro(
   userId: string,
@@ -221,18 +388,43 @@ export async function actualizarAhorro(
   }
 
   const data =
-    construirDatosValidados(input);
+    construirDatosValidados(
+      input
+    );
 
   const ahorro =
     await prisma.ahorro.update({
       where: {
         userId,
       },
+
       data,
     });
 
-  return formatearRespuesta(ahorro);
+  /*
+   * La meta pudo cambiar.
+   * Volvemos a comprobarla.
+   */
+  try {
+    await verificarMetaAhorro(
+      userId,
+      ahorro
+    );
+  } catch (error) {
+    console.error(
+      "[ahorros] Error al verificar meta:",
+      error
+    );
+  }
+
+  return formatearRespuesta(
+    ahorro
+  );
 }
+
+/* =========================
+   ELIMINAR AHORRO
+========================= */
 
 export async function eliminarAhorro(
   userId: string
@@ -257,6 +449,22 @@ export async function eliminarAhorro(
       404
     );
   }
+
+  /*
+   * Eliminamos las notificaciones
+   * relacionadas con esta meta.
+   */
+  await prisma.notificacion.deleteMany({
+    where: {
+      userId,
+      tipo: "META_AHORRO",
+
+      mensaje: {
+        contains:
+          `[AHORRO:${ahorroExistente.id}:`,
+      },
+    },
+  });
 
   await prisma.ahorro.delete({
     where: {
