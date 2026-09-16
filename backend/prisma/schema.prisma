@@ -7,10 +7,24 @@ datasource db {
   provider = "postgresql"
 }
 
+/**
+ * =========================
+ * USUARIOS
+ * =========================
+ *
+ * Soporta:
+ * - Usuarios tradicionales con correo + contraseña.
+ * - Usuarios registrados/iniciados con Google.
+ *
+ * Los usuarios existentes siguen siendo LOCAL
+ * gracias a @default(LOCAL).
+ */
 model User {
   id                  String               @id @default(uuid())
   email               String               @unique
-  password            String
+  password            String?
+  googleId            String?              @unique
+  authProvider        AuthProvider         @default(LOCAL)
   role                Role                 @default(USER)
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
@@ -27,6 +41,11 @@ model User {
   @@map("users")
 }
 
+/**
+ * =========================
+ * REFRESH TOKENS
+ * =========================
+ */
 model RefreshToken {
   id        String   @id @default(uuid())
   tokenHash String   @unique
@@ -39,6 +58,11 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
+/**
+ * =========================
+ * INGRESOS
+ * =========================
+ */
 model Ingreso {
   id            String            @id @default(uuid())
   tipo          TipoIngreso
@@ -57,6 +81,11 @@ model Ingreso {
   @@map("ingresos")
 }
 
+/**
+ * =========================
+ * GASTOS
+ * =========================
+ */
 model Gasto {
   id          Int            @id @default(autoincrement())
   fecha       DateTime
@@ -73,6 +102,11 @@ model Gasto {
   @@map("gastos")
 }
 
+/**
+ * =========================
+ * EVENTOS
+ * =========================
+ */
 model Evento {
   id          String   @id @default(uuid())
   fecha       DateTime
@@ -85,6 +119,11 @@ model Evento {
   @@map("eventos")
 }
 
+/**
+ * =========================
+ * AHORROS
+ * =========================
+ */
 model Ahorro {
   id           String    @id @default(uuid())
   metaAhorro   Decimal   @db.Decimal(12, 2)
@@ -99,6 +138,11 @@ model Ahorro {
   @@map("ahorros")
 }
 
+/**
+ * =========================
+ * PRESUPUESTO IMPUESTOS
+ * =========================
+ */
 model PresupuestoImpuesto {
   id        String   @id @default(uuid())
   monto     Decimal  @db.Decimal(12, 2)
@@ -110,6 +154,11 @@ model PresupuestoImpuesto {
   @@map("presupuestos_impuestos")
 }
 
+/**
+ * =========================
+ * FONDO DE EMERGENCIA
+ * =========================
+ */
 model FondoEmergencia {
   id        String    @id @default(uuid())
   monto     Decimal   @db.Decimal(12, 2)
@@ -127,7 +176,6 @@ model FondoEmergencia {
  * GASTO PLANEADO
  * =========================
  */
-
 model GastoPlaneado {
   id        String    @id @default(uuid())
   monto     Decimal   @db.Decimal(12, 2)
@@ -145,7 +193,6 @@ model GastoPlaneado {
  * NOTIFICACIONES
  * =========================
  */
-
 model Notificacion {
   id        String           @id @default(uuid())
   tipo      TipoNotificacion
@@ -170,6 +217,18 @@ model Notificacion {
 enum Role {
   ADMIN
   USER
+}
+
+/**
+ * Método utilizado para crear
+ * la cuenta del usuario.
+ *
+ * LOCAL  = correo + contraseña
+ * GOOGLE = cuenta de Google
+ */
+enum AuthProvider {
+  LOCAL
+  GOOGLE
 }
 
 enum TipoIngreso {

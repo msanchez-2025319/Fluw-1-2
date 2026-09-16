@@ -877,4 +877,169 @@ button[type='submit']:disabled {
   .field input {
     transition: none;
   }
+  /* =========================================================
+   SEPARADOR LOGIN / GOOGLE
+   ========================================================= */
+
+.login-divider {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.85rem;
+
+  margin: 1.6rem 0;
+}
+
+.login-divider span {
+  flex: 1;
+
+  height: 1px;
+
+  background: #d8ddd6;
+}
+
+.login-divider p {
+  margin: 0;
+
+  white-space: nowrap;
+
+  font-family: var(--font-body, Arial, sans-serif);
+
+  font-size: 0.82rem;
+  font-weight: 500;
+
+  color: #7d867d;
+}
+
+
+/* =========================================================
+   GOOGLE LOGIN
+   ========================================================= */
+
+.google-login-container {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.google-signin-button {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 44px;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.google-signin-button:hover {
+  transform: translateY(-1px);
+}
+
+.google-hidden {
+  display: none;
+}
+
+
+/* =========================================================
+   CARGANDO GOOGLE
+   ========================================================= */
+
+.google-loading {
+  width: 100%;
+  min-height: 44px;
+
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.65rem;
+
+  padding: 0.75rem 1rem;
+
+  border: 1px solid #d8ddd6;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: var(--color-green);
+
+  font-family: var(--font-body, Arial, sans-serif);
+
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.google-spinner {
+  width: 17px;
+  height: 17px;
+
+  flex: 0 0 17px;
+
+  border: 2px solid rgba(43, 72, 50, 0.18);
+
+  border-top-color: var(--color-green);
+
+  border-radius: 50%;
+
+  animation: google-spin 0.7s linear infinite;
+}
+
+@keyframes google-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   GOOGLE RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+  .login-divider {
+    margin: 1.3rem 0;
+    gap: 0.65rem;
+  }
+
+  .login-divider p {
+    font-size: 0.78rem;
+  }
+
+  .google-login-container {
+    overflow: hidden;
+  }
+
+}
+
+
+/* =========================================================
+   REDUCIR ANIMACIONES
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .google-spinner {
+    animation: none;
+  }
+
+  .google-signin-button {
+    transition: none;
+  }
+
+}
 }
