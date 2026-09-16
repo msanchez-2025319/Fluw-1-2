@@ -12,6 +12,7 @@ import eventosRoutes from "./modules/eventos/eventos.routes.js";
 import estadisticasRoutes from "./modules/estadisticas/estadisticas.routes.js";
 import ahorrosRoutes from "./modules/ahorros/ahorros.routes.js";
 import presupuestoImpuestosRoutes from "./modules/presupuesto-impuestos/presupuesto-impuestos.routes.js";
+import fondoEmergenciaRoutes from "./modules/fondo-emergencia/fondo-emergencia.routes.js";
 
 const app = express();
 
@@ -75,6 +76,11 @@ app.use(
 app.use(
   "/api/presupuesto-impuestos",
   presupuestoImpuestosRoutes
+);
+
+app.use(
+  "/api/fondo-emergencia",
+  fondoEmergenciaRoutes
 );
 
 /* =========================

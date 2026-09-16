@@ -1,0 +1,268 @@
+<div class="modal-overlay">
+
+  <section class="fondo-modal">
+
+    <button
+      type="button"
+      class="cerrar-btn"
+      aria-label="Cerrar"
+      (click)="cerrarModal()">
+
+      <img
+        src="/images/cancel.png"
+        alt=""
+        class="cerrar-icono">
+
+    </button>
+
+    @if (cargando()) {
+
+      <div class="estado-modal">
+        Cargando...
+      </div>
+
+    } @else {
+
+      @if (!fondo() || modoEdicion()) {
+
+        <!-- CREAR / EDITAR -->
+
+        <header class="modal-header">
+
+          <h2>
+            Fondo de emergencia
+          </h2>
+
+        </header>
+
+        <form
+          class="fondo-form"
+          [formGroup]="formulario"
+          (ngSubmit)="guardar()">
+
+          <div class="formulario-contenedor">
+
+            <div class="campo">
+
+              <label for="montoFondo">
+                Monto de presupuesto
+              </label>
+
+              <div class="input-moneda">
+
+                <span>Q</span>
+
+                <input
+                  id="montoFondo"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="00.00"
+                  formControlName="monto">
+
+              </div>
+
+            </div>
+
+            <div class="campo">
+
+              <label for="tipoCuota">
+                Tipo de cuota
+              </label>
+
+              <select
+                id="tipoCuota"
+                formControlName="tipoCuota">
+
+                <option value="SEMANAL">
+                  Semanal
+                </option>
+
+                <option value="MENSUAL">
+                  Mensual
+                </option>
+
+                <option value="ANUAL">
+                  Anual
+                </option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+          @if (
+            formulario.controls.monto.touched &&
+            formulario.controls.monto.invalid
+          ) {
+
+            <p class="mensaje-error">
+              Ingresa un monto mayor a Q0.00.
+            </p>
+
+          }
+
+          @if (mensajeError()) {
+
+            <p class="mensaje-error">
+              {{ mensajeError() }}
+            </p>
+
+          }
+
+          @if (mensajeExito()) {
+
+            <p class="mensaje-exito">
+              {{ mensajeExito() }}
+            </p>
+
+          }
+
+          <div class="acciones">
+
+            @if (modoEdicion()) {
+
+              <button
+                type="button"
+                class="btn-cancelar"
+                [disabled]="guardando()"
+                (click)="cancelarEdicion()">
+
+                Cancelar
+
+              </button>
+
+            }
+
+            <button
+              type="submit"
+              class="btn-guardar"
+              [disabled]="
+                formulario.invalid ||
+                guardando()
+              ">
+
+              {{
+                guardando()
+                  ? 'Guardando...'
+                  : 'Guardar'
+              }}
+
+            </button>
+
+          </div>
+
+        </form>
+
+      } @else {
+
+        <!-- VISTA DEL FONDO GUARDADO -->
+
+        <header class="modal-header">
+
+          <h2>
+            Fondo de emergencia
+          </h2>
+
+        </header>
+
+        <div class="detalle-fondo">
+
+          <div class="detalle-contenedor">
+
+            <div class="detalle-campo">
+
+              <span class="detalle-label">
+                Monto de presupuesto
+              </span>
+
+              <div class="detalle-valor">
+
+                {{
+                  formatearMoneda(
+                    fondo()!.monto
+                  )
+                }}
+
+              </div>
+
+            </div>
+
+            <div class="detalle-campo">
+
+              <span class="detalle-label">
+                Tipo de cuota
+              </span>
+
+              <div class="detalle-valor">
+
+                {{
+                  textoTipoCuota(
+                    fondo()!.tipoCuota
+                  )
+                }}
+
+              </div>
+
+            </div>
+
+          </div>
+
+          @if (mensajeError()) {
+
+            <p class="mensaje-error">
+              {{ mensajeError() }}
+            </p>
+
+          }
+
+          @if (mensajeExito()) {
+
+            <p class="mensaje-exito">
+              {{ mensajeExito() }}
+            </p>
+
+          }
+
+          <div
+            class="
+              acciones
+              acciones-detalle
+            ">
+
+            <button
+              type="button"
+              class="btn-eliminar"
+              [disabled]="eliminando()"
+              (click)="eliminar()">
+
+              {{
+                eliminando()
+                  ? 'Eliminando...'
+                  : 'Eliminar'
+              }}
+
+            </button>
+
+            <button
+              type="button"
+              class="btn-editar"
+              [disabled]="eliminando()"
+              (click)="editar()">
+
+              Editar
+
+            </button>
+
+          </div>
+
+        </div>
+
+      }
+
+    }
+
+  </section>
+
+</div>
