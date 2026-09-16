@@ -22,6 +22,7 @@ model User {
   presupuestoImpuesto PresupuestoImpuesto?
   fondoEmergencia     FondoEmergencia?
   gastoPlaneado       GastoPlaneado?
+  notificaciones      Notificacion[]
 
   @@map("users")
 }
@@ -141,6 +142,27 @@ model GastoPlaneado {
 
 /**
  * =========================
+ * NOTIFICACIONES
+ * =========================
+ */
+
+model Notificacion {
+  id        String           @id @default(uuid())
+  tipo      TipoNotificacion
+  titulo    String
+  mensaje   String
+  leida     Boolean          @default(false)
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([userId, createdAt])
+  @@map("notificaciones")
+}
+
+/**
+ * =========================
  * ENUMS
  * =========================
  */
@@ -210,4 +232,17 @@ enum TipoCuota {
   SEMANAL
   MENSUAL
   ANUAL
+}
+
+/**
+ * Tipos de notificaciones que puede
+ * generar la aplicación.
+ */
+enum TipoNotificacion {
+  INICIO_SESION
+  PROXIMO_EVENTO
+  META_AHORRO
+  IMPUESTOS
+  FONDO_EMERGENCIA
+  LIMITE_GASTOS
 }

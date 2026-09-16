@@ -14,6 +14,7 @@ import ahorrosRoutes from "./modules/ahorros/ahorros.routes.js";
 import presupuestoImpuestosRoutes from "./modules/presupuesto-impuestos/presupuesto-impuestos.routes.js";
 import fondoEmergenciaRoutes from "./modules/fondo-emergencia/fondo-emergencia.routes.js";
 import gastosPlaneadosRoutes from "./modules/gastos-planeados/gastos-planeados.routes.js";
+import notificacionesRoutes from "./modules/notificaciones/notificaciones.routes.js";
 
 const app = express();
 
@@ -87,6 +88,11 @@ app.use(
 app.use(
   "/api/gastos-planeados",
   gastosPlaneadosRoutes
+);
+
+app.use(
+  "/api/notificaciones",
+  notificacionesRoutes
 );
 
 /* =========================
