@@ -565,7 +565,17 @@
 
     <!-- FONDO DE EMERGENCIA -->
 
-    <section class="card stat-card">
+    <section
+      class="card stat-card fondo-emergencia-card-clickable"
+      role="button"
+      tabindex="0"
+      aria-label="Abrir fondo de emergencia"
+      (click)="abrirFondoEmergencia()"
+      (keydown.enter)="abrirFondoEmergencia()"
+      (keydown.space)="
+        abrirFondoEmergencia();
+        $event.preventDefault()
+      ">
 
       <div
         class="card-header dark centered small">
@@ -580,7 +590,7 @@
 
         <span
           class="stat-value stat-neutral">
-          Q10,000.00
+          {{ fondoEmergenciaTexto() }}
         </span>
 
       </div>
@@ -765,6 +775,17 @@
         onAhorroActualizado($event)
       ">
     </app-ahorro-modal>
+
+  }
+
+  @if (mostrarFondoEmergencia()) {
+
+    <app-fondo-emergencia-modal
+      (cerrar)="cerrarFondoEmergencia()"
+      (fondoActualizado)="
+        onFondoEmergenciaActualizado($event)
+      ">
+    </app-fondo-emergencia-modal>
 
   }
 

@@ -13,6 +13,7 @@ import { AuthService } from '../../services/auth.service';
 import { IngresosService } from '../../services/ingresos.service';
 import { GastosService } from '../../services/gastos.service';
 import { AhorrosService } from '../../services/ahorros.service';
+import { FondoEmergenciaService } from '../../services/fondo-emergencia.service';
 
 import {
   ImpuestosService,
@@ -43,6 +44,10 @@ import {
 import {
   Ahorro
 } from '../ahorros/models/ahorro.model';
+
+import {
+  FondoEmergencia
+} from '../fondo-emergencia/models/fondo-emergencia.model';
 
 import {
   SueldoFijoModal
@@ -105,6 +110,10 @@ import {
   AhorroModal
 } from '../ahorros/components/ahorro-modal/ahorro-modal';
 
+import {
+  FondoEmergenciaModal
+} from '../fondo-emergencia/components/fondo-emergencia-modal/fondo-emergencia-modal';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -127,7 +136,8 @@ import {
 
     EventosModal,
     EstadisticasModal,
-    AhorroModal
+    AhorroModal,
+    FondoEmergenciaModal
   ],
 
   templateUrl: './dashboard.html',
@@ -146,6 +156,9 @@ export class Dashboard implements OnInit {
 
   private ahorrosService =
     inject(AhorrosService);
+
+  private fondoEmergenciaService =
+    inject(FondoEmergenciaService);
 
   private impuestosService =
     inject(ImpuestosService);
@@ -170,6 +183,9 @@ export class Dashboard implements OnInit {
 
   ahorro =
     signal<Ahorro | null>(null);
+
+  fondoEmergencia =
+    signal<FondoEmergencia | null>(null);
 
   resumenImpuestos =
     signal<ResumenImpuestos | null>(null);
@@ -265,6 +281,28 @@ export class Dashboard implements OnInit {
       );
     });
 
+  fondoEmergenciaTexto =
+    computed(() => {
+
+      const registro =
+        this.fondoEmergencia();
+
+      if (!registro) {
+        return 'Q0.00';
+      }
+
+      return new Intl.NumberFormat(
+        'es-GT',
+        {
+          style: 'currency',
+          currency: 'GTQ',
+          minimumFractionDigits: 2
+        }
+      ).format(
+        Number(registro.monto) || 0
+      );
+    });
+
   totalImpuestos =
     computed(() =>
       Number(
@@ -357,6 +395,9 @@ export class Dashboard implements OnInit {
   mostrarAhorro =
     signal(false);
 
+  mostrarFondoEmergencia =
+    signal(false);
+
   cargandoEventos =
     signal(false);
 
@@ -392,6 +433,8 @@ export class Dashboard implements OnInit {
     this.cargarEstadisticasSemanales();
 
     this.cargarAhorro();
+
+    this.cargarFondoEmergencia();
 
     this.cargarTotalImpuestos();
   }
@@ -446,6 +489,44 @@ export class Dashboard implements OnInit {
     this.ahorro.set(
       ahorro
     );
+  }
+
+  // =========================
+  // FONDO DE EMERGENCIA
+  // =========================
+
+  cargarFondoEmergencia(): void {
+
+    this.fondoEmergenciaService
+      .obtener()
+      .subscribe({
+
+        next: (res) => {
+          this.fondoEmergencia.set(res.fondo);
+        },
+
+        error: (err: HttpErrorResponse) => {
+          console.error(
+            '[dashboard] Error al cargar fondo de emergencia:',
+            err
+          );
+          this.fondoEmergencia.set(null);
+        }
+      });
+  }
+
+  abrirFondoEmergencia(): void {
+    this.mostrarFondoEmergencia.set(true);
+  }
+
+  cerrarFondoEmergencia(): void {
+    this.mostrarFondoEmergencia.set(false);
+  }
+
+  onFondoEmergenciaActualizado(
+    fondo: FondoEmergencia | null
+  ): void {
+    this.fondoEmergencia.set(fondo);
   }
 
   // =========================
