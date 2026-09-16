@@ -15,6 +15,7 @@ import { GastosService } from '../../services/gastos.service';
 import { AhorrosService } from '../../services/ahorros.service';
 import { FondoEmergenciaService } from '../../services/fondo-emergencia.service';
 import { GastosPlaneadosService } from '../../services/gastos-planeados.service';
+import { NotificacionesService } from '../../services/notificaciones.service';
 
 import {
   ImpuestosService,
@@ -123,6 +124,10 @@ import {
   GastoPlaneadoModal
 } from '../gastos-planeados/components/gasto-planeado-modal/gasto-planeado-modal';
 
+import {
+  NotificacionesModal
+} from '../notificaciones/components/notificaciones-modal/notificaciones-modal';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -147,7 +152,8 @@ import {
     EstadisticasModal,
     AhorroModal,
     FondoEmergenciaModal,
-    GastoPlaneadoModal
+    GastoPlaneadoModal,
+    NotificacionesModal
   ],
 
   templateUrl: './dashboard.html',
@@ -172,6 +178,9 @@ export class Dashboard implements OnInit {
 
   private gastosPlaneadosService =
     inject(GastosPlaneadosService);
+
+  private notificacionesService =
+    inject(NotificacionesService);
 
   private impuestosService =
     inject(ImpuestosService);
@@ -469,6 +478,12 @@ export class Dashboard implements OnInit {
   mostrarGastoPlaneado =
     signal(false);
 
+  mostrarNotificaciones =
+    signal(false);
+
+  cantidadNotificaciones =
+    signal(0);
+
   cargandoEventos =
     signal(false);
 
@@ -510,6 +525,8 @@ export class Dashboard implements OnInit {
     this.cargarGastoPlaneado();
 
     this.cargarTotalImpuestos();
+
+    this.cargarNotificaciones();
   }
 
   // =========================
@@ -1268,6 +1285,61 @@ export class Dashboard implements OnInit {
         minimumFractionDigits: 2
       }
     ).format(valor);
+  }
+
+  // =========================
+  // NOTIFICACIONES
+  // =========================
+
+  cargarNotificaciones(): void {
+
+    this.notificacionesService
+      .obtenerNotificaciones()
+      .subscribe({
+
+        next: res => {
+
+          this.cantidadNotificaciones
+            .set(
+              res.noLeidas ?? 0
+            );
+        },
+
+        error: (
+          err: HttpErrorResponse
+        ) => {
+
+          console.error(
+            '[dashboard] Error al cargar notificaciones:',
+            err
+          );
+
+          this.cantidadNotificaciones
+            .set(0);
+        }
+      });
+  }
+
+  abrirNotificaciones(): void {
+
+    this.mostrarNotificaciones
+      .set(true);
+  }
+
+  cerrarNotificaciones(): void {
+
+    this.mostrarNotificaciones
+      .set(false);
+
+    this.cargarNotificaciones();
+  }
+
+  onNotificacionesActualizadas(
+    cantidad: number
+  ): void {
+
+    this.cantidadNotificaciones
+      .set(cantidad);
   }
 
   // =========================

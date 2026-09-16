@@ -114,7 +114,8 @@
       <button
         class="user-block"
         type="button"
-        aria-label="Notificaciones y correo">
+        aria-label="Abrir centro de notificaciones"
+        (click)="abrirNotificaciones()">
 
         <span
           class="user-block-icon"
@@ -125,15 +126,34 @@
             alt="perfil"
             class="user-block-img">
 
-          <img
-            src="/images/notificaciones.png"
-            alt="notificaciones"
-            class="user-block-img-small">
+          <span class="notificacion-icon-wrapper">
+
+            <img
+              src="/images/notificaciones.png"
+              alt="notificaciones"
+              class="user-block-img-small">
+
+            @if (cantidadNotificaciones() > 0) {
+
+              <span class="notificacion-badge">
+                {{
+                  cantidadNotificaciones() > 99
+                    ? '99+'
+                    : cantidadNotificaciones()
+                }}
+              </span>
+
+            }
+
+          </span>
 
         </span>
 
         <span class="user-email">
-          admin@fluw.com
+          {{
+            user()?.email ??
+            'Usuario'
+          }}
         </span>
 
       </button>
@@ -810,6 +830,19 @@
         onGastoPlaneadoActualizado($event)
       ">
     </app-gasto-planeado-modal>
+
+  }
+
+  <!-- CENTRO DE NOTIFICACIONES -->
+
+  @if (mostrarNotificaciones()) {
+
+    <app-notificaciones-modal
+      (cerrar)="cerrarNotificaciones()"
+      (notificacionesActualizadas)="
+        onNotificacionesActualizadas($event)
+      ">
+    </app-notificaciones-modal>
 
   }
 

@@ -1,0 +1,223 @@
+<div
+  class="modal-overlay"
+  (click)="cerrarModal()"
+>
+  <section
+    class="notificaciones-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Centro de notificaciones"
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- BOTÓN CERRAR -->
+
+    <button
+      type="button"
+      class="cerrar-btn"
+      aria-label="Cerrar"
+      (click)="cerrarModal()"
+    >
+      <img
+        src="/images/cancel.png"
+        alt=""
+        class="cerrar-icono"
+      >
+    </button>
+
+    <!-- TÍTULO -->
+
+    <div class="modal-header">
+
+      <h2>
+        Centro de notificaciones
+      </h2>
+
+    </div>
+
+    <!-- CONTENIDO -->
+
+    <div class="centro-contenido">
+
+      <!-- =========================
+           USUARIO
+      ========================== -->
+
+      <aside class="usuario-panel">
+
+        <h3>
+          Usuario
+        </h3>
+
+        <div class="usuario-datos">
+
+          <span class="usuario-label">
+            Correo electrónico
+          </span>
+
+          <span class="usuario-email">
+            {{ obtenerCorreoUsuario() }}
+          </span>
+
+        </div>
+
+      </aside>
+
+      <!-- =========================
+           NOTIFICACIONES
+      ========================== -->
+
+      <section class="notificaciones-seccion">
+
+        <div class="notificaciones-titulo">
+
+          <span>
+            Notificaciones
+          </span>
+
+          @if (noLeidas() > 0) {
+
+            <span class="contador">
+              {{ noLeidas() }}
+            </span>
+
+          }
+
+        </div>
+
+        <div class="notificaciones-panel">
+
+          @if (cargando()) {
+
+            <div class="estado-centro">
+              Cargando notificaciones...
+            </div>
+
+          } @else {
+
+            @if (error()) {
+
+              <p class="mensaje-error">
+                {{ error() }}
+              </p>
+
+            }
+
+            @if (notificaciones().length === 0) {
+
+              <div class="sin-notificaciones">
+
+                <strong>
+                  No tienes notificaciones
+                </strong>
+
+                <span>
+                  Tus avisos aparecerán aquí.
+                </span>
+
+              </div>
+
+            } @else {
+
+              <!-- MARCAR TODAS -->
+
+              @if (noLeidas() > 0) {
+
+                <div class="acciones-notificaciones">
+
+                  <button
+                    type="button"
+                    class="btn-leer-todas"
+                    [disabled]="procesando()"
+                    (click)="marcarTodasComoLeidas()"
+                  >
+                    Marcar todas como leídas
+                  </button>
+
+                </div>
+
+              }
+
+              <!-- LISTADO -->
+
+              <div class="lista-notificaciones">
+
+                @for (
+                  notificacion of notificaciones();
+                  track notificacion.id;
+                  let indice = $index
+                ) {
+
+                  <article
+                    class="notificacion-item"
+                    [class.no-leida]="!notificacion.leida"
+                    role="button"
+                    tabindex="0"
+                    (click)="marcarComoLeida(notificacion)"
+                    (keydown.enter)="marcarComoLeida(notificacion)"
+                  >
+
+                    <!-- NÚMERO -->
+
+                    <span class="notificacion-numero">
+                      {{ indice + 1 }}
+                    </span>
+
+                    <!-- INFORMACIÓN -->
+
+                    <div class="notificacion-informacion">
+
+                      <strong class="notificacion-titulo">
+                        {{ notificacion.titulo }}
+                      </strong>
+
+                      <span class="notificacion-mensaje">
+                        {{
+                          obtenerMensajeLimpio(
+                            notificacion.mensaje
+                          )
+                        }}
+                      </span>
+
+                    </div>
+
+                    <!-- FECHA -->
+
+                    <span class="notificacion-fecha">
+                      {{
+                        formatearFecha(
+                          notificacion.createdAt
+                        )
+                      }}
+                    </span>
+
+                    <!-- ELIMINAR -->
+
+                    <button
+                      type="button"
+                      class="eliminar-notificacion"
+                      aria-label="Eliminar notificación"
+                      [disabled]="procesando()"
+                      (click)="eliminar(notificacion, $event)"
+                    >
+                      ×
+                    </button>
+
+                  </article>
+
+                }
+
+              </div>
+
+            }
+
+          }
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </section>
+</div>
